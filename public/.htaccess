@@ -1,0 +1,32 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    # Built from the address the visitor asked for (THE_REQUEST), not REQUEST_URI:
+    # on the live host the root .htaccess has already rewritten the path into
+    # /public/, and the redirect used to send people to sofor.io/public/about.
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{THE_REQUEST} ^[A-Z]+\s([^?\s]*[^/?\s])/+(\?\S*)?\s
+    RewriteRule ^ %1 [L,R=301]
+
+    # The site never lives under /public/: send such addresses to the real one.
+    RewriteCond %{THE_REQUEST} ^[A-Z]+\s/public/([^?\s]*)
+    RewriteRule ^ /%1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>

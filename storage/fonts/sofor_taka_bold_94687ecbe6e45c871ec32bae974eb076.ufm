@@ -1,0 +1,26 @@
+StartFontMetrics 4.1
+Notice Converted by PHP-font-lib
+Comment https://github.com/dompdf/php-font-lib
+EncodingScheme FontSpecific
+Copyright Copyright 2025 The Noto Project Authors (https://github.com/notofonts/bengali)
+FontName Noto Sans Bengali
+FontSubfamily Bold
+UniqueID 3.011;GOOG;NotoSansBengali-Bold
+FullName Noto Sans Bengali Bold
+Version Version 3.011
+PostScriptName NotoSansBengali-Bold
+LicenseURL https://openfontlicense.org
+Weight Bold
+ItalicAngle 0
+IsFixedPitch false
+UnderlineThickness 50
+UnderlinePosition -100
+FontHeightOffset 0
+Ascender 917
+Descender -408
+FontBBox -644 -408 1275 1007
+StartCharMetrics 3
+U 32 ; WX 260 ; N uni0020 ; G 1
+U 2547 ; WX 609 ; N uni09f3 ; G 2
+EndCharMetrics
+EndFontMetrics

@@ -1,0 +1,42 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-DlHPthdM.css",
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "name": "app",
+    "names": [
+      "app.css"
+    ]
+  },
+  "resources/fonts/taka/taka-400.woff2": {
+    "file": "assets/taka-400-HKbemyfd.woff2",
+    "src": "resources/fonts/taka/taka-400.woff2"
+  },
+  "resources/fonts/taka/taka-500.woff2": {
+    "file": "assets/taka-500-C0UKxdbF.woff2",
+    "src": "resources/fonts/taka/taka-500.woff2"
+  },
+  "resources/fonts/taka/taka-600.woff2": {
+    "file": "assets/taka-600-r-Jma8YF.woff2",
+    "src": "resources/fonts/taka/taka-600.woff2"
+  },
+  "resources/fonts/taka/taka-700.woff2": {
+    "file": "assets/taka-700-CXurHndw.woff2",
+    "src": "resources/fonts/taka/taka-700.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DNTjPeIS.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "css": [
+      "assets/app-DlHPthdM.css"
+    ],
+    "assets": [
+      "assets/taka-400-HKbemyfd.woff2",
+      "assets/taka-500-C0UKxdbF.woff2",
+      "assets/taka-600-r-Jma8YF.woff2",
+      "assets/taka-700-CXurHndw.woff2"
+    ]
+  }
+}

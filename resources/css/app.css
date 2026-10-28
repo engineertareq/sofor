@@ -1,0 +1,1961 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* ==================================================================
+   SOFOR - design system
+   ------------------------------------------------------------------
+   Light only. There is no dark theme and no `.dark` variant: every
+   surface reads from the tokens below and they are all light values.
+
+   The look is a travel ledger. Warm paper, deep teal ink, marigold
+   for the things that matter, and receipt-style rules for money.
+   ================================================================== */
+
+/* ------------------------------------------------------------------
+   The taka sign (৳) and the Bangla digits ০-৯. Poppins, Inter and
+   JetBrains Mono have none, so every device borrowed them from whatever
+   font it had - thin, small, or missing - and Hind Siliguri's ১ reads
+   as a squiggle. These faces hold only those eleven glyphs (cut from
+   Noto Sans Bengali, SIL Open Font License, see
+   resources/fonts/taka/OFL.txt): about 2 KB each, inlined by the build,
+   so money looks the same everywhere and matches the weight of the
+   text next to it.
+------------------------------------------------------------------ */
+@font-face {
+    font-family: 'Sofor Taka';
+    src: url('../fonts/taka/taka-400.woff2') format('woff2');
+    font-weight: 100 449;
+    font-display: block;
+    unicode-range: U+09E6-09EF, U+09F3;
+}
+
+@font-face {
+    font-family: 'Sofor Taka';
+    src: url('../fonts/taka/taka-500.woff2') format('woff2');
+    font-weight: 450 549;
+    font-display: block;
+    unicode-range: U+09E6-09EF, U+09F3;
+}
+
+@font-face {
+    font-family: 'Sofor Taka';
+    src: url('../fonts/taka/taka-600.woff2') format('woff2');
+    font-weight: 550 649;
+    font-display: block;
+    unicode-range: U+09E6-09EF, U+09F3;
+}
+
+@font-face {
+    font-family: 'Sofor Taka';
+    src: url('../fonts/taka/taka-700.woff2') format('woff2');
+    font-weight: 650 900;
+    font-display: block;
+    unicode-range: U+09E6-09EF, U+09F3;
+}
+
+/* ------------------------------------------------------------------
+   Type + scale
+   Poppins for headlines and big figures (round, friendly and easy to
+   read at a glance), Inter for everything you have to read, JetBrains
+   Mono for money and references where digits must line up.
+------------------------------------------------------------------ */
+@theme {
+    --font-sans: 'Sofor Taka', 'Inter', 'Hind Siliguri', 'Noto Sans Bengali', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-display: 'Sofor Taka', 'Poppins', 'Hind Siliguri', 'Noto Sans Bengali', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    /* The landing headline: the same face as every other heading. */
+    --font-headline: var(--font-display);
+    --font-mono: 'Sofor Taka', 'JetBrains Mono', 'Hind Siliguri', 'Noto Sans Bengali', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    --radius-4xl: 1.75rem;
+    --radius-5xl: 2.25rem;
+    --radius-6xl: 3rem;
+
+    --animate-rise: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-float: float 9s ease-in-out infinite;
+    --animate-marquee: marquee 38s linear infinite;
+    --animate-tick: tick 44s linear infinite;
+    --animate-pulse-ring: pulse-ring 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animate-spin-slow: spin 22s linear infinite;
+    --animate-pop: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+    /* The signature: a hard offset with no blur, so buttons look like
+       they were pressed onto the page rather than floating above it. */
+    --shadow-sticker: 4px 4px 0 0 var(--ink);
+    --shadow-sticker-sm: 3px 3px 0 0 var(--ink);
+    --shadow-sticker-brand: 4px 4px 0 0 var(--brand-2);
+    --shadow-soft: 0 2px 6px rgba(43, 38, 24, 0.05), 0 1px 2px rgba(43, 38, 24, 0.04);
+    --shadow-lift: 0 18px 40px -22px rgba(43, 38, 24, 0.28), 0 4px 12px rgba(43, 38, 24, 0.05);
+    --shadow-sheet: 0 40px 90px -40px rgba(43, 38, 24, 0.45);
+    --shadow-glow: 0 16px 34px -18px color-mix(in oklab, var(--brand) 55%, transparent);
+}
+
+/* ------------------------------------------------------------------
+   Semantic tokens. Light only, warm throughout: nothing here is a
+   pure grey, and the "black" is a deep green-black rather than #000.
+------------------------------------------------------------------ */
+:root {
+    /* paper */
+    --canvas: #fbf8f2;
+    --canvas-tint: #f6f3ec;
+    --surface: #ffffff;
+    /* Secondary surfaces were the same yellow hue as the paper, just darker,
+       which read as dirty card rather than as a distinct layer. This is a
+       warm-neutral stone instead: half the saturation, and far enough from the
+       paper that it registers as its own surface. Kept warm on purpose so teal
+       and marigold chips keep their hue contrast against it. */
+    --surface-2: #f2f0ea;
+    --surface-raised: #ffffff;
+    --line: #ece4d5;
+    --line-strong: #d9cdb6;
+
+    /* ink */
+    --ink: #17211f;
+    --muted: #5b6660;
+    --faint: #8d968c;
+
+    /* brand: deep teal. Trust, money, a calm sea. */
+    --brand: #0f6f6a;
+    --brand-2: #0a544f;
+    --brand-tint: #dcf0ed;
+    --brand-ink: #ffffff;
+
+    /* accent: marigold. The journey, the warm bit, the thing you notice. */
+    --accent: #f2a71b;
+    --accent-2: #cf8304;
+    --accent-tint: #fdf1d7;
+
+    /* money + status. Deliberately different hues from brand so "you
+       are owed" can never be mistaken for a brand element. */
+    --positive: #0d7a4a;
+    --positive-tint: #d9f2e4;
+    --negative: #c0392b;
+    --negative-tint: #fbe2df;
+    --warning: #a4650a;
+    --warning-tint: #fcefd6;
+    --info: #2c62c9;
+    --info-tint: #e0e9fb;
+
+    --glow: color-mix(in oklab, var(--brand) 45%, transparent);
+    --glass: color-mix(in srgb, #ffffff 82%, transparent);
+    --grain: color-mix(in srgb, var(--ink) 5%, transparent);
+
+    color-scheme: light;
+}
+
+@theme inline {
+    --color-canvas: var(--canvas);
+    --color-canvas-tint: var(--canvas-tint);
+    --color-surface: var(--surface);
+    --color-surface-2: var(--surface-2);
+    --color-surface-raised: var(--surface-raised);
+    --color-line: var(--line);
+    --color-line-strong: var(--line-strong);
+    --color-ink: var(--ink);
+    --color-muted: var(--muted);
+    --color-faint: var(--faint);
+    --color-brand: var(--brand);
+    --color-brand-2: var(--brand-2);
+    --color-brand-tint: var(--brand-tint);
+    --color-brand-ink: var(--brand-ink);
+    --color-accent: var(--accent);
+    --color-accent-2: var(--accent-2);
+    --color-accent-tint: var(--accent-tint);
+    --color-positive: var(--positive);
+    --color-positive-tint: var(--positive-tint);
+    --color-negative: var(--negative);
+    --color-negative-tint: var(--negative-tint);
+    --color-warning: var(--warning);
+    --color-warning-tint: var(--warning-tint);
+    --color-info: var(--info);
+    --color-info-tint: var(--info-tint);
+    --color-glass: var(--glass);
+
+    /* Category palette, shared by chips and the donut chart so a
+       category looks the same everywhere it appears. */
+    --color-cat-stay: #2f7fd0;
+    --color-cat-travel: #7c5cf0;
+    --color-cat-food: #d97706;
+    --color-cat-fun: #0d7a4a;
+    --color-cat-tickets: #c026a3;
+    --color-cat-shop: #d1542b;
+    --color-cat-guide: #0f8b8d;
+    --color-cat-other: #6b7280;
+}
+
+/* ------------------------------------------------------------------
+   Keyframes
+------------------------------------------------------------------ */
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes route-draw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes pop {
+    from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.94);
+    }
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* The announcement strip: same motion, slower and quieter. */
+@keyframes tick {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* Sponsors page hero: the rings of logos turn slowly round the Sofor mark. */
+@keyframes orbit-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 color-mix(in oklab, var(--positive) 50%, transparent);
+    }
+    70% {
+        box-shadow: 0 0 0 9px transparent;
+    }
+    100% {
+        box-shadow: 0 0 0 0 transparent;
+    }
+}
+
+/* Respect the system setting: animations snap to their end state
+   instead of leaving staggered content invisible. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------ */
+@layer base {
+    * {
+        border-color: var(--line);
+    }
+
+    html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+        scroll-padding-top: 5.5rem;
+    }
+
+    body {
+        background-color: var(--canvas);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        overscroll-behavior-y: none;
+        -webkit-font-smoothing: antialiased;
+        /* Long emails, URLs and unbroken names wrap instead of widening the page. */
+        overflow-wrap: break-word;
+    }
+
+    /* Paper grain. Sits above the background and below everything else,
+       so it never interferes with clicks or text contrast. */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.55;
+        background-image:
+            radial-gradient(circle at 18% 26%, var(--grain) 0 1px, transparent 1.4px),
+            radial-gradient(circle at 72% 68%, var(--grain) 0 1px, transparent 1.4px);
+        background-size: 26px 26px, 34px 34px;
+    }
+
+    /* Responsive safety net -------------------------------------------
+       Flex and grid children default to `min-width: auto`, which means a
+       long select, a date input or a wide chip can silently push the whole
+       document wider than a phone screen. Allowing them to shrink keeps
+       every layout inside the viewport at 320px and up. */
+    main .flex > *,
+    main .grid > *,
+    .glass-card > *,
+    .glass-card .flex > *,
+    .glass-card .grid > *,
+    .receipt > *,
+    .receipt .flex > * {
+        min-width: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        letter-spacing: -0.022em;
+        font-optical-sizing: auto;
+    }
+
+    /* Money, references, counts: anything that must line up in a column. */
+    .num,
+    th[data-num],
+    td[data-num] {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: 'tnum' 1;
+    }
+
+    ::selection {
+        background: color-mix(in oklab, var(--accent) 45%, transparent);
+        color: var(--ink);
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: color-mix(in oklab, var(--faint) 40%, transparent);
+        border-radius: 9999px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+    }
+
+    input,
+    select,
+    textarea {
+        font-family: inherit;
+    }
+
+    input[type='number']::-webkit-outer-spin-button,
+    input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    :focus-visible {
+        outline: 3px solid var(--brand);
+        outline-offset: 2px;
+        border-radius: 6px;
+    }
+}
+
+/* ==================================================================
+   Reusable pieces
+   ================================================================== */
+@layer components {
+    /* ------------------------------------------------------------
+       Surfaces
+       ------------------------------------------------------------ */
+
+    /* Kept for compatibility with the existing markup: a translucent
+       header bar rather than a glassy panel. */
+    .glass {
+        background: color-mix(in srgb, var(--canvas) 86%, transparent);
+        backdrop-filter: saturate(180%) blur(14px);
+        -webkit-backdrop-filter: saturate(180%) blur(14px);
+    }
+
+    .glass-card {
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-4xl);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .hairline {
+        border: 1.5px solid var(--line);
+    }
+
+    /* A receipt: the card money lives in. Dashed top strip, mono
+       headings, and a perforation you can tear along. */
+    .receipt {
+        position: relative;
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius-4xl);
+        box-shadow: var(--shadow-soft);
+    }
+
+    /* Perforated divider with a notch punched out of each side, the way
+       a torn receipt looks. Drop it between line items and the total.
+       `--perf-inset` should match the horizontal padding of the card it
+       sits in, plus half the notch, so the notch lands on the border. */
+    .perf {
+        --perf-inset: 1.8rem;
+        position: relative;
+        border-top: 2px dashed var(--line-strong);
+        margin-block: 1.15rem;
+    }
+
+    .perf::before,
+    .perf::after {
+        content: '';
+        position: absolute;
+        top: -0.6rem;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 9999px;
+        background: var(--canvas);
+        border: 1.5px solid var(--line);
+    }
+
+    .perf::before {
+        left: calc(-1 * var(--perf-inset));
+    }
+
+    .perf::after {
+        right: calc(-1 * var(--perf-inset));
+    }
+
+    /* Inside a surface that is not on canvas, the notches have to match
+       that surface instead. */
+    .perf[data-on='surface']::before,
+    .perf[data-on='surface']::after {
+        background: var(--surface);
+    }
+
+    .perf[data-on='surface-2']::before,
+    .perf[data-on='surface-2']::after {
+        background: var(--surface-2);
+    }
+
+    /* ------------------------------------------------------------
+       Signature devices
+       ------------------------------------------------------------ */
+
+    /* Hard offset shadow. The button presses into it on click. */
+    .sticker {
+        box-shadow: var(--shadow-sticker-sm);
+        transition:
+            box-shadow 0.15s ease,
+            transform 0.15s ease;
+    }
+
+    .sticker:hover {
+        box-shadow: var(--shadow-sticker);
+        transform: translate(-1px, -1px);
+    }
+
+    .sticker:active {
+        box-shadow: 0 0 0 0 var(--ink);
+        transform: translate(3px, 3px);
+    }
+
+    /* Marigold highlighter behind a word. Rotated slightly so it reads
+       as a marker swipe rather than a background block. */
+    .marker {
+        position: relative;
+        display: inline-block;
+        padding-inline: 0.08em;
+        z-index: 0;
+    }
+
+    .marker::before {
+        content: '';
+        position: absolute;
+        left: -0.06em;
+        right: -0.06em;
+        bottom: 0.02em;
+        height: 0.42em;
+        background: var(--accent);
+        border-radius: 0.3em 0.6em 0.35em 0.5em;
+        transform: rotate(-1.2deg);
+        z-index: -1;
+    }
+
+    /* A passport stamp: dashed ring, mono caps, slightly off square. */
+    .stamp {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.7rem;
+        border: 2px dashed currentColor;
+        border-radius: 0.6rem;
+        font-family: var(--font-mono);
+        font-size: 0.63rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        transform: rotate(-2.5deg);
+        opacity: 0.9;
+    }
+
+    .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--faint);
+    }
+
+    .text-gradient {
+        background: linear-gradient(100deg, var(--brand), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    /* Faint ruled lines, like a ledger page. Used behind hero art. */
+    .grid-lines {
+        background-image:
+            linear-gradient(to right, color-mix(in oklab, var(--line) 85%, transparent) 1px, transparent 1px),
+            linear-gradient(to bottom, color-mix(in oklab, var(--line) 85%, transparent) 1px, transparent 1px);
+        background-size: 48px 48px;
+    }
+
+    .rise {
+        animation: var(--animate-rise);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .safe-bottom {
+        padding-bottom: max(env(safe-area-inset-bottom), 0.35rem);
+    }
+
+    .safe-top {
+        padding-top: env(safe-area-inset-top);
+    }
+
+    /* ------------------------------------------------------------
+       Category chips
+       Colour per category is fixed, and the donut chart reuses the
+       same eight values so a category is recognisable everywhere.
+       ------------------------------------------------------------ */
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 9999px;
+        border: 1.5px solid transparent;
+        padding: 0.22rem 0.62rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+    }
+
+    .chip[data-cat='accommodation'] {
+        color: #1f5f9e;
+        background: color-mix(in oklab, var(--color-cat-stay) 13%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-stay) 28%, transparent);
+    }
+
+    .chip[data-cat='transport'] {
+        color: #5b3fc4;
+        background: color-mix(in oklab, var(--color-cat-travel) 13%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-travel) 28%, transparent);
+    }
+
+    .chip[data-cat='food'] {
+        color: #9a5405;
+        background: color-mix(in oklab, var(--color-cat-food) 15%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-food) 28%, transparent);
+    }
+
+    .chip[data-cat='activities'] {
+        color: #0a5f3a;
+        background: color-mix(in oklab, var(--color-cat-fun) 13%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-fun) 28%, transparent);
+    }
+
+    .chip[data-cat='tickets'] {
+        color: #94147e;
+        background: color-mix(in oklab, var(--color-cat-tickets) 13%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-tickets) 28%, transparent);
+    }
+
+    .chip[data-cat='shopping'] {
+        color: #a03d1c;
+        background: color-mix(in oklab, var(--color-cat-shop) 14%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-shop) 28%, transparent);
+    }
+
+    .chip[data-cat='guide'] {
+        color: #0a6364;
+        background: color-mix(in oklab, var(--color-cat-guide) 13%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-guide) 28%, transparent);
+    }
+
+    .chip[data-cat='other'] {
+        color: #4b5563;
+        background: color-mix(in oklab, var(--color-cat-other) 12%, transparent);
+        border-color: color-mix(in oklab, var(--color-cat-other) 26%, transparent);
+    }
+
+    /* ------------------------------------------------------------
+       Overlays
+       ------------------------------------------------------------ */
+    .sheet-backdrop {
+        background: color-mix(in oklab, #17211f 45%, transparent);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
+
+    /* ------------------------------------------------------------
+       Form controls
+       ------------------------------------------------------------ */
+    .form-field {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        border-radius: 1rem;
+        border: 1.5px solid var(--line-strong);
+        background: var(--surface);
+        padding: 0.7rem 0.95rem;
+        font-size: 0.925rem;
+        color: var(--ink);
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.15s ease;
+    }
+
+    .form-field::placeholder {
+        color: var(--faint);
+    }
+
+    .form-field:hover {
+        border-color: color-mix(in oklab, var(--line-strong) 70%, var(--ink));
+    }
+
+    .form-field:focus {
+        outline: none;
+        border-color: var(--ink);
+        box-shadow: 0 0 0 4px color-mix(in oklab, var(--ink) 8%, transparent);
+        background: var(--surface);
+    }
+
+    .form-field:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        background: var(--surface-2);
+    }
+
+    .form-field-error {
+        border-color: color-mix(in oklab, var(--negative) 60%, transparent);
+    }
+
+    .form-field-error:focus {
+        border-color: var(--negative);
+        box-shadow: 0 0 0 4px color-mix(in oklab, var(--negative) 12%, transparent);
+    }
+
+    /* Selects and native date inputs carry an intrinsic min-content width
+       (the widest option / the date format) that ignores `width: 100%`. */
+    select.form-field,
+    input.form-field {
+        text-overflow: ellipsis;
+    }
+
+    select.form-field {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235b6660' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.9rem center;
+        padding-right: 2.5rem;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-flex;
+        height: 1.4rem;
+        width: 2.5rem;
+        flex-shrink: 0;
+        cursor: pointer;
+        border-radius: 9999px;
+        border: 1.5px solid var(--line-strong);
+        background: color-mix(in oklab, var(--faint) 32%, transparent);
+        transition: background 0.2s ease;
+    }
+
+    .switch::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        height: 1.05rem;
+        width: 1.05rem;
+        border-radius: 9999px;
+        background: #fff;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 1px 3px rgb(23 33 31 / 0.28);
+    }
+
+    .switch[data-on='true'] {
+        background: var(--brand);
+        border-color: var(--brand);
+    }
+
+    .switch[data-on='true']::after {
+        transform: translateX(1.05rem);
+    }
+
+    /* ------------------------------------------------------------
+       Travel map. Borders stay one pixel at any size thanks to
+       non-scaling strokes; visited areas take the brand teal.
+       ------------------------------------------------------------ */
+    .tm-area {
+        fill: #e6dfd0;
+        stroke: var(--surface);
+        stroke-width: 0.75px;
+        vector-effect: non-scaling-stroke;
+        cursor: pointer;
+        transition: fill 0.15s ease;
+    }
+
+    .tm-area:hover {
+        fill: #d6ccb6;
+    }
+
+    .tm-area.is-visited {
+        fill: var(--brand);
+    }
+
+    .tm-area.is-visited:hover {
+        fill: var(--brand-2);
+    }
+
+    /* Places too small to see on the map get a dot once visited. */
+    .tm-dot {
+        display: none;
+        fill: var(--brand);
+        stroke: var(--surface);
+        stroke-width: 1px;
+        vector-effect: non-scaling-stroke;
+        cursor: pointer;
+    }
+
+    .tm-dot.is-visited {
+        display: inline;
+    }
+
+    /* The same map on a dark background (Explorers hero). */
+    .tm-night .tm-area {
+        fill: #1f3a35;
+        stroke: #12201d;
+    }
+
+    .tm-night .tm-area:hover {
+        fill: #2a4c46;
+    }
+
+    .tm-night .tm-dot {
+        fill: #f6b23a;
+        stroke: #12201d;
+    }
+
+    /* ------------------------------------------------------------
+       Home page
+       ------------------------------------------------------------ */
+
+    /* The hero map colours itself in along the route (resources/js/app.js,
+       heroJourney). Districts start as paper and turn teal one by one. */
+    .hero-map .tm-area {
+        fill: #e6dfd0;
+        stroke: var(--canvas);
+        cursor: default;
+        transition: fill 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .hero-map .tm-area:hover {
+        fill: #e6dfd0;
+    }
+
+    .hero-map .tm-area.is-visited,
+    .hero-map .tm-area.is-visited:hover {
+        fill: var(--brand);
+    }
+
+    /* The route is dashed, then revealed by a mask that draws along it. */
+    .hero-route-mask {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+    }
+
+    .is-drawing .hero-route-mask {
+        animation: route-draw 4.4s cubic-bezier(0.45, 0, 0.25, 1) 0.4s forwards;
+    }
+
+    .is-drawn .hero-route-mask {
+        stroke-dashoffset: 0;
+    }
+
+    .hero-stop {
+        transform: scale(0);
+        transform-box: fill-box;
+        transform-origin: center;
+        transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .hero-stop.is-on {
+        transform: scale(1);
+    }
+
+    /* Sections ease in as they scroll into view. Only once JavaScript has
+       said it can reveal them (html.reveal-ready), so nothing is ever left
+       hidden if scripts fail. */
+    .reveal-ready [data-reveal] {
+        opacity: 0;
+        transform: translateY(22px);
+        transition:
+            opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+            transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        transition-delay: var(--reveal-delay, 0ms);
+    }
+
+    .reveal-ready [data-reveal].is-revealed {
+        opacity: 1;
+        transform: none;
+    }
+
+    /* The travel map card: one tile per district. */
+    .waffle-tile {
+        aspect-ratio: 1;
+        border-radius: 3px;
+        background: #ebe3d2;
+    }
+
+    .waffle-tile.is-on {
+        background: var(--brand);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .reveal-ready [data-reveal] {
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+
+        .hero-map .tm-area,
+        .hero-stop {
+            transition: none;
+        }
+    }
+
+    /* Read only (public profile): nothing to tap, so no pointer or hover change. */
+    .tm-static .tm-area,
+    .tm-static .tm-dot {
+        cursor: default;
+    }
+
+    .tm-static .tm-area:hover {
+        fill: #e6dfd0;
+    }
+
+    .tm-static .tm-area.is-visited:hover {
+        fill: var(--brand);
+    }
+
+    /* ------------------------------------------------------------
+       Sponsors
+       ------------------------------------------------------------ */
+
+    /* "Sponsored by" on the home page: two identical sets side by side,
+       slid left by exactly one set, so the loop never shows a seam. */
+    .sponsor-marquee {
+        overflow: hidden;
+        mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    }
+
+    .sponsor-track {
+        display: flex;
+        width: max-content;
+        animation: marquee var(--sponsor-duration, 40s) linear infinite;
+    }
+
+    .sponsor-marquee:hover .sponsor-track,
+    .sponsor-marquee:focus-within .sponsor-track {
+        animation-play-state: paused;
+    }
+
+    .sponsor-set {
+        display: flex;
+        flex-shrink: 0;
+        gap: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    @media (min-width: 640px) {
+        .sponsor-set {
+            gap: 1rem;
+            padding-right: 1rem;
+        }
+    }
+
+    /* Sponsors page hero: each ring turns one way while its chips turn back
+       the other way at the same speed, so the logos always stay upright. */
+    .orbit-ring {
+        position: absolute;
+        border-radius: 9999px;
+        border: 1.5px dashed var(--line-strong);
+        animation: orbit-spin var(--orbit-duration, 70s) linear infinite;
+    }
+
+    .orbit-ring.is-reverse {
+        animation-direction: reverse;
+    }
+
+    .orbit-chip {
+        position: absolute;
+        left: calc(50% + 50% * cos(var(--angle)));
+        top: calc(50% + 50% * sin(var(--angle)));
+        translate: -50% -50%;
+    }
+
+    .orbit-chip > * {
+        animation: orbit-spin var(--orbit-duration, 70s) linear infinite reverse;
+    }
+
+    .orbit-ring.is-reverse .orbit-chip > * {
+        animation-direction: normal;
+    }
+
+    .orbit:hover .orbit-ring,
+    .orbit:hover .orbit-chip > * {
+        animation-play-state: paused;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        /* No motion: the strip becomes a row you can swipe, shown once. */
+        .sponsor-marquee {
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .sponsor-track {
+            animation: none;
+        }
+
+        .sponsor-set[aria-hidden='true'] {
+            display: none;
+        }
+
+        .orbit-ring,
+        .orbit-chip > * {
+            animation: none;
+        }
+    }
+}
+
+@media print {
+    .no-print,
+    [data-print-hide] {
+        display: none !important;
+    }
+
+    header,
+    nav,
+    footer {
+        display: none !important;
+    }
+
+    body,
+    body::before {
+        background: #fff !important;
+        color: #17211f !important;
+    }
+
+    body::before {
+        display: none !important;
+    }
+
+    [data-trip-live] {
+        display: block !important;
+    }
+
+    .glass-card,
+    .receipt {
+        box-shadow: none !important;
+        border-color: #ccc !important;
+    }
+}
+
+/* Bangla letters join into conjuncts; letter-spacing pulls them apart, so
+   tracked labels go back to normal spacing when the page is in Bangla. */
+html[lang='bn'] :is(.eyebrow, .stamp, [class*='tracking-']) {
+    letter-spacing: normal;
+}
+
+/* Home page Explorers card: the busiest districts twinkle in the constellation. */
+@keyframes star-twinkle {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.45;
+    }
+}
+
+.star-twinkle {
+    animation: star-twinkle 3s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------------
+   Place names on the maps (resources/js/map-tips.js): a small ink label
+   beside the pointer or above the finger, with an arrow to the place.
+------------------------------------------------------------------ */
+.map-tip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 95;
+    display: flex;
+    max-width: min(17rem, calc(100vw - 1rem));
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.5rem 0.8rem 0.55rem;
+    border-radius: 0.95rem;
+    background: var(--ink);
+    color: #fbf8f2;
+    box-shadow: 0 12px 28px -12px rgba(23, 33, 31, 0.55), 0 0 0 1px rgba(251, 248, 242, 0.08);
+    font-size: 13.5px;
+    line-height: 1.25;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-9999px, -9999px);
+    transition: opacity 0.12s ease;
+}
+
+.map-tip.is-shown {
+    opacity: 1;
+}
+
+.map-tip::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--tip-arrow, 50%) - 6px);
+    width: 12px;
+    height: 12px;
+    background: var(--ink);
+    border-radius: 2px;
+    transform: rotate(45deg);
+}
+
+.map-tip[data-placement='above']::after {
+    bottom: -5px;
+}
+
+.map-tip[data-placement='below']::after {
+    top: -5px;
+}
+
+.map-tip-name {
+    position: relative;
+    z-index: 1;
+    font-weight: 700;
+}
+
+.map-tip-meta {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 11.5px;
+    color: rgba(251, 248, 242, 0.72);
+}
+
+.map-tip-meta[hidden] {
+    display: none;
+}
+
+.map-tip-dot {
+    display: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+}
+
+.map-tip[data-state='visited'] .map-tip-dot {
+    display: inline-block;
+    background: #3fbfa8;
+}
+
+.map-tip[data-night][data-state='visited'] .map-tip-dot {
+    background: #f6b23a;
+}
+
+.map-tip[data-state='open'] .map-tip-dot {
+    display: inline-block;
+    border: 1.5px solid rgba(251, 248, 242, 0.55);
+}
+
+/* The place under the pointer gets an outline. */
+.tm-area.is-tipped,
+.tm-dot.is-tipped {
+    stroke: var(--ink);
+    stroke-width: 1.6px;
+}
+
+.tm-night .tm-area.is-tipped,
+.tm-night .tm-dot.is-tipped {
+    stroke: #fbf8f2;
+}
+
+/* ------------------------------------------------------------------
+   Site header (components/site-header, resources/js/site-nav.js): sits
+   lightly on the page at the top and lifts off it once scrolled or
+   while a mega menu is open.
+------------------------------------------------------------------ */
+.site-header {
+    background: color-mix(in srgb, var(--canvas) 74%, transparent);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.site-header.is-raised {
+    background: color-mix(in srgb, var(--canvas) 92%, transparent);
+    border-bottom-color: color-mix(in srgb, var(--line) 85%, transparent);
+    box-shadow: 0 10px 28px -22px rgba(43, 38, 24, 0.4);
+}
+
+/* A mega menu trigger: the page you are in under it gets a marigold dot. */
+.nav-trigger[data-current]::after {
+    content: '';
+    position: absolute;
+    bottom: 0.15rem;
+    left: 50%;
+    width: 0.3rem;
+    height: 0.3rem;
+    margin-left: -0.15rem;
+    border-radius: 999px;
+    background: var(--accent);
+}
+
+/* The night card in the Explore menu: a few stars over deep teal. */
+.mega-night {
+    background:
+        radial-gradient(circle at 85% 0%, rgba(246, 178, 58, 0.22), transparent 55%),
+        linear-gradient(160deg, #1d4a44, #10302c 70%);
+}
+
+/* Language switch (components/locale-switch): the thumb slides to the
+   language you tap while the page reloads in it. */
+.locale-switch {
+    position: relative;
+    isolation: isolate;
+}
+
+.locale-switch-thumb {
+    position: absolute;
+    z-index: -1;
+    top: 2px;
+    bottom: 2px;
+    left: 2px;
+    width: calc(50% - 2px);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow-soft), 0 0 0 1px color-mix(in srgb, var(--line) 70%, transparent);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.locale-switch[data-on='1'] .locale-switch-thumb {
+    transform: translateX(100%);
+}
+
+.locale-switch > button {
+    color: var(--muted);
+}
+
+.locale-switch > button:hover,
+.locale-switch[data-on='0'] > button[data-i='0'],
+.locale-switch[data-on='1'] > button[data-i='1'] {
+    color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .locale-switch-thumb,
+    .site-header {
+        transition: none;
+    }
+}
+
+/* ------------------------------------------------------------------
+   A traveller's own map at night (public profile): where they have
+   been glows marigold. Static night maps keep their dark fill on hover
+   (the beige read-only hover is for paper maps); the place under the
+   pointer still gets its outline and label (map-tips.js).
+------------------------------------------------------------------ */
+.tm-night .tm-area.is-visited,
+.tm-night .tm-dot.is-visited {
+    fill: #f6b23a;
+}
+
+.tm-static.tm-night .tm-area:hover {
+    fill: #2a4c46;
+}
+
+.tm-static.tm-night .tm-area.is-visited:hover {
+    fill: #ffc65a;
+}
+
+.profile-map {
+    filter: drop-shadow(0 0 22px rgba(246, 178, 58, 0.18));
+}
+
+/* A shade lighter than the Explorers sky, so the places still to go read clearly. */
+.profile-map .tm-area:not(.is-visited) {
+    fill: #234540;
+}
+
+.profile-map .tm-area:not(.is-visited):hover {
+    fill: #2f5852;
+}
+
+/* The ring round the avatar fills to how much of the map is explored. */
+.profile-ring {
+    animation: profile-ring 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+@keyframes profile-ring {
+    from {
+        stroke-dasharray: 0 100;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-ring {
+        animation: none;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Sign in and sign up (layouts/auth, components/auth-art): Bangladesh
+   at night behind the form. On phones it sits faintly behind the top
+   of the card; from lg it stands full height to the card's left.
+------------------------------------------------------------------ */
+.auth-art {
+    top: -1.5rem;
+    right: -22%;
+    width: 92%;
+    max-width: 34rem;
+    opacity: 0.4;
+}
+
+@media (min-width: 640px) {
+    .auth-art {
+        right: -6%;
+        width: 66%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .auth-art {
+        top: 50%;
+        right: auto;
+        left: max(-3%, calc(50vw - 46rem));
+        width: auto;
+        max-width: none;
+        opacity: 1;
+        transform: translateY(-50%);
+    }
+
+    .auth-art .auth-map {
+        width: auto;
+        height: min(88vh, 54rem);
+    }
+}
+
+.auth-map .tm-area {
+    fill: #1b3530;
+    stroke: #10201c;
+}
+
+.auth-map .tm-area.is-visited {
+    fill: #24584f;
+}
+
+.auth-route {
+    stroke: #f6b23a;
+    stroke-width: 3;
+    stroke-dasharray: 2 8;
+    stroke-linecap: round;
+}
+
+.auth-route-mask {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: route-draw 5.2s cubic-bezier(0.45, 0, 0.25, 1) 0.4s forwards;
+}
+
+.auth-stop {
+    transform: scale(0);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: auth-stop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) var(--stop-delay, 0s) forwards;
+}
+
+.auth-stop-glow {
+    fill: rgba(246, 178, 58, 0.22);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: auth-glow 2.8s ease-in-out infinite;
+}
+
+.auth-traveller {
+    filter: drop-shadow(0 0 6px #f6b23a);
+}
+
+@keyframes auth-stop {
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes auth-glow {
+    0%,
+    100% {
+        transform: scale(0.8);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.3;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-route-mask {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+
+    .auth-stop {
+        animation: none;
+        transform: none;
+    }
+
+    .auth-stop-glow {
+        animation: none;
+    }
+
+    .auth-traveller {
+        display: none;
+    }
+}
+
+/* The header logo (components/site-header) may shrink so the bar never wraps.
+   Below 400px an uploaded logo - often a wide wordmark - is capped a little
+   smaller; it keeps its shape (object-contain) whatever width is left. */
+.site-logo a,
+.site-logo a > span {
+    max-width: 100%;
+}
+
+@media (max-width: 399.98px) {
+    .site-logo img {
+        max-width: min(100%, 6.5rem);
+        height: 1.375rem;
+    }
+}
+
+/* ------------------------------------------------------------------
+   The cost timeline (trips/partials/timeline, resources/js/trip-timeline.js):
+   Sofor's dotted road down the page, filling with marigold as you scroll.
+   Every row puts a 2.5rem node on the road; --cat is the cost's colour.
+------------------------------------------------------------------ */
+.tl {
+    --tl-node: 2.5rem;
+}
+
+.tl-track {
+    position: absolute;
+    top: 1.25rem;
+    /* Set by trip-timeline.js to end at the finish pin's centre. */
+    bottom: var(--tl-end, 2.5rem);
+    left: calc(var(--tl-node) / 2 - 2px);
+    width: 4px;
+    background: radial-gradient(circle, var(--line-strong) 1.7px, transparent 2px) center top / 4px 11px repeat-y;
+}
+
+.tl-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: var(--tl-progress, 0%);
+    border-radius: 4px;
+    background: linear-gradient(to bottom, var(--brand), #f6b23a);
+    box-shadow: 0 0 12px rgba(246, 178, 58, 0.45);
+    transition: height 0.12s linear;
+}
+
+.tl-row {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+}
+
+@media (min-width: 640px) {
+    .tl-row {
+        gap: 1.25rem;
+    }
+}
+
+/* Space between the stretches of road (start, days, end) - not between costs. */
+.tl > .tl-row + .tl-day,
+.tl > .tl-day + .tl-day,
+.tl > .tl-day + .tl-row {
+    margin-top: 2.5rem;
+}
+
+.tl-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 1.1rem;
+}
+
+.tl-pin,
+.tl-node {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--tl-node);
+    height: var(--tl-node);
+    border-radius: 999px;
+    box-shadow: 0 0 0 5px var(--canvas);
+}
+
+.tl-pin-start {
+    background: var(--brand);
+    color: #fff;
+}
+
+.tl-pin-day {
+    background: var(--ink);
+    color: #f6b23a;
+}
+
+.tl-pin-day.is-aside {
+    background: var(--surface);
+    color: var(--muted);
+    box-shadow: 0 0 0 5px var(--canvas), inset 0 0 0 1.5px var(--line-strong);
+}
+
+.tl-pin-end {
+    background: #fdf1d7;
+}
+
+.tl-day-head .tl-pin {
+    margin-top: 0.1rem;
+}
+
+.tl-node {
+    background: var(--surface);
+    border: 2px solid color-mix(in oklab, var(--cat, var(--line)) 30%, var(--line));
+    transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.tl-item.is-lit .tl-node {
+    border-color: var(--cat);
+    box-shadow: 0 0 0 5px var(--canvas), 0 0 0 8px color-mix(in oklab, var(--cat) 28%, transparent);
+    transform: scale(1.06);
+}
+
+/* A cost: a wash of its colour in the corner, tied to its node on the road. */
+.tl-card {
+    position: relative;
+    padding: 0.95rem 1.05rem 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 1.3rem;
+    background:
+        radial-gradient(120% 90% at 0% 0%, color-mix(in oklab, var(--cat) 9%, transparent), transparent 55%),
+        var(--surface);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.tl-card::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--tl-node) / 2 - 1px);
+    right: 100%;
+    width: 0.85rem;
+    height: 2px;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--cat) 45%, var(--line));
+}
+
+@media (min-width: 640px) {
+    .tl-card::before {
+        width: 1.25rem;
+    }
+}
+
+.tl-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: color-mix(in oklab, var(--cat) 80%, var(--ink));
+}
+
+.tl-cat::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--cat);
+}
+
+.tl-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: var(--surface-2);
+    transition: background-color 0.2s ease;
+}
+
+.tl-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--cat) 35%, var(--line));
+    box-shadow: var(--shadow-lift);
+}
+
+.tl-note {
+    padding-left: 0.85rem;
+    border-left: 3px solid color-mix(in oklab, var(--cat) 50%, transparent);
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.tl-item.is-flash .tl-card {
+    animation: tl-flash 1.8s ease;
+}
+
+@keyframes tl-flash {
+    0%,
+    100% {
+        box-shadow: var(--shadow-soft);
+    }
+    25%,
+    60% {
+        box-shadow: 0 0 0 3px #f6b23a, var(--shadow-lift);
+    }
+}
+
+/* The hero ribbon of where the money went grows in from the left. */
+.tl-grow {
+    transform-origin: left center;
+    animation: tl-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--tl-delay, 0ms) both;
+}
+
+@keyframes tl-grow {
+    from {
+        transform: scaleX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tl-fill,
+    .tl-node,
+    .tl-card {
+        transition: none;
+    }
+
+    .tl-grow,
+    .tl-item.is-flash .tl-card {
+        animation: none;
+    }
+}
+
+/* ------------------------------------------------------------------
+   The trip's map on the cost timeline (trips/partials/timeline-map):
+   the trip's places teal, today's places marigold, the route drawn
+   on as far as the day on screen. --u is 1% of the view's width.
+------------------------------------------------------------------ */
+.tl-map-card {
+    background:
+        radial-gradient(circle at 85% 0%, rgba(15, 111, 106, 0.45), transparent 60%),
+        radial-gradient(circle, rgba(251, 248, 242, 0.1) 1px, transparent 1.3px) 0 0 / 18px 18px,
+        var(--ink);
+}
+
+.tl-map-area {
+    fill: #1d3732;
+    stroke: #10201c;
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    transition: fill 0.45s ease;
+}
+
+.tl-map-area.is-lit {
+    fill: #2a675e;
+}
+
+.tl-map-area.is-now {
+    fill: #f6b23a;
+    filter: drop-shadow(0 0 calc(var(--u) * 1.5) rgba(246, 178, 58, 0.6));
+}
+
+.tl-map-route-base {
+    fill: none;
+    stroke: rgba(251, 248, 242, 0.35);
+    stroke-linecap: round;
+}
+
+.tl-map-route {
+    fill: none;
+    stroke: #f6b23a;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tl-map-stop {
+    cursor: pointer;
+    outline: none;
+}
+
+.tl-map-stop.is-static {
+    cursor: default;
+}
+
+.tl-map-halo {
+    fill: rgba(246, 178, 58, 0.22);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.tl-map-dot {
+    fill: #fbf8f2;
+    stroke: #10201c;
+    transition: fill 0.35s ease;
+}
+
+.tl-map-number {
+    fill: #10201c;
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+
+.tl-map-name {
+    fill: #fbf8f2;
+    stroke: #10201c;
+    paint-order: stroke;
+    stroke-linejoin: round;
+    font-family: var(--font-display);
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.tl-map-stop.is-past .tl-map-dot,
+.tl-map-stop.is-static .tl-map-dot {
+    fill: #f6b23a;
+}
+
+.tl-map-stop.is-now .tl-map-halo {
+    opacity: 1;
+    animation: tl-map-pulse 2.2s ease-in-out infinite;
+}
+
+.tl-map-stop.is-now .tl-map-name,
+.tl-map-stop.is-static .tl-map-name,
+.tl-map-stop:hover .tl-map-name,
+.tl-map-stop:focus-visible .tl-map-name {
+    opacity: 1;
+}
+
+.tl-map-stop:focus-visible .tl-map-dot {
+    stroke: #f6b23a;
+}
+
+@keyframes tl-map-pulse {
+    0%,
+    100% {
+        transform: scale(0.85);
+    }
+    50% {
+        transform: scale(1.25);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tl-map-route,
+    .tl-map-area,
+    .tl-map-dot,
+    .tl-map-name {
+        transition: none;
+    }
+
+    .tl-map-stop.is-now .tl-map-halo {
+        animation: none;
+    }
+}
+
+/* Phones and tablets see the map once, above the timeline, not beside it:
+   every place is named there. */
+@media (max-width: 1023.98px) {
+    .tl-map-name {
+        opacity: 1;
+    }
+}
+
+a.tl-tag:hover {
+    background: var(--brand-tint);
+}
+
+/* ------------------------------------------------------------------
+   The profile photo cropper (profile/partials/details). The photo is
+   drawn at its own size and moved with one transform; the frame is the
+   square that gets saved, with everything outside it dimmed, the corners
+   it keeps lightly dimmed and a ring for the round crops.
+------------------------------------------------------------------ */
+.crop-stage {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 1.75rem;
+    background:
+        repeating-conic-gradient(#1c2a27 0% 25%, #22322e 0% 50%) 0 0 / 22px 22px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+}
+
+.crop-stage.is-dragging {
+    cursor: grabbing;
+}
+
+.crop-stage:focus-visible {
+    box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--brand);
+}
+
+.crop-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    max-width: none;
+    transform-origin: 0 0;
+    will-change: transform;
+    pointer-events: none;
+    -webkit-user-drag: none;
+}
+
+.crop-frame {
+    position: absolute;
+    pointer-events: none;
+    box-shadow: 0 0 0 100vmax rgb(12 18 17 / 0.62);
+    outline: 1px solid rgb(255 255 255 / 0.35);
+}
+
+.crop-frame::before,
+.crop-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.crop-frame::before {
+    background: radial-gradient(circle closest-side, transparent calc(100% - 0.5px), rgb(12 18 17 / 0.3) 100%);
+}
+
+.crop-frame::after {
+    border-radius: 9999px;
+    box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.9), 0 0 0 1px rgb(0 0 0 / 0.12);
+}
+
+/* Thirds, while the photo moves. */
+.crop-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    --grid-line: rgb(255 255 255 / 0.45);
+    background:
+        linear-gradient(to right, transparent calc(33.33% - 0.5px), var(--grid-line) 0 calc(33.33% + 0.5px), transparent 0 calc(66.67% - 0.5px), var(--grid-line) 0 calc(66.67% + 0.5px), transparent 0),
+        linear-gradient(to bottom, transparent calc(33.33% - 0.5px), var(--grid-line) 0 calc(33.33% + 0.5px), transparent 0 calc(66.67% - 0.5px), var(--grid-line) 0 calc(66.67% + 0.5px), transparent 0);
+}
+
+.crop-stage.is-dragging .crop-grid {
+    opacity: 1;
+}
+
+.crop-preview {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: 0 0 0 2px var(--surface), 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+.crop-preview img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    max-width: none;
+    transform-origin: 0 0;
+}
+
+/* The zoom slider: the part zoomed in so far is filled. */
+.crop-zoom {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 1.75rem;
+    background: transparent;
+    cursor: pointer;
+    --track: linear-gradient(to right, var(--brand) var(--fill, 0%), var(--line) var(--fill, 0%));
+}
+
+.crop-zoom::-webkit-slider-runnable-track {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: var(--track);
+}
+
+.crop-zoom::-moz-range-track {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: var(--track);
+}
+
+.crop-zoom::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: -0.4375rem;
+    border-radius: 9999px;
+    background: var(--surface);
+    border: 2px solid var(--brand);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+    transition: transform 0.15s ease;
+}
+
+.crop-zoom::-moz-range-thumb {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    background: var(--surface);
+    border: 2px solid var(--brand);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+}
+
+.crop-zoom:active::-webkit-slider-thumb {
+    transform: scale(1.12);
+}
+
+.crop-zoom:focus-visible {
+    outline: none;
+}
+
+.crop-zoom:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px var(--brand-tint);
+}
+
+/* ------------------------------------------------------------------
+   Home FAQ cards (home, #faq). The answer opens by growing its grid
+   row from 0fr to 1fr, so it slides open at its real height.
+------------------------------------------------------------------ */
+.faq-card:hover {
+    border-color: var(--line-strong);
+}
+
+.faq-card.is-open {
+    border-color: var(--ink);
+    box-shadow: var(--shadow-sticker-sm);
+}
+
+.faq-card.is-open .faq-toggle {
+    transform: rotate(45deg);
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--canvas);
+}
+
+.faq-answer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+}
+
+.faq-answer > div {
+    min-height: 0;
+}
+
+.faq-card.is-open .faq-answer {
+    grid-template-rows: 1fr;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .faq-answer {
+        transition: none;
+    }
+}

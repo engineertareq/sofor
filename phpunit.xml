@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <!-- The suite reads Sofor in English; BanglaInterfaceTest checks the real default, Bangla. -->
+        <env name="APP_INTERFACE_LOCALE" value="en"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="DB_URL" value=""/>
+        <env name="MAIL_MAILER" value="array"/>
+        <!-- Tests never send real texts; the SMS tests fake the HTTP calls themselves. -->
+        <env name="SMS_DRIVER" value="log"/>
+        <env name="SMS_NET_BD_API_KEY" value=""/>
+        <!-- Tests never reach Cloudflare R2; the R2 tests switch disks themselves and fake them. -->
+        <env name="MEDIA_STORAGE" value="local"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="PULSE_ENABLED" value="false"/>
+        <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="NIGHTWATCH_ENABLED" value="false"/>
+
+        <!-- bKash stays off unless a test turns it on, so the suite never
+             depends on the credentials sitting in the local .env file. -->
+        <env name="BKASH_BASE_URL" value="https://tokenized.sandbox.bka.sh/v1.2.0-beta"/>
+        <env name="BKASH_API" value="tokenized"/>
+        <env name="BKASH_SANDBOX" value="true"/>
+        <env name="BKASH_USERNAME" value=""/>
+        <env name="BKASH_PASSWORD" value=""/>
+        <env name="BKASH_APP_KEY" value=""/>
+        <env name="BKASH_APP_SECRET" value=""/>
+    </php>
+</phpunit>

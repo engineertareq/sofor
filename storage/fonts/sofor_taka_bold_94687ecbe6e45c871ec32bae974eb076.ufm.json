@@ -1,0 +1,34 @@
+{
+    "codeToName": {
+        "32": "uni0020",
+        "2547": "uni09f3"
+    },
+    "isUnicode": true,
+    "EncodingScheme": "FontSpecific",
+    "FontName": "Noto Sans Bengali",
+    "FullName": "Noto Sans Bengali Bold",
+    "Version": "Version 3.011",
+    "PostScriptName": "NotoSansBengali-Bold",
+    "Weight": "Bold",
+    "ItalicAngle": "0",
+    "IsFixedPitch": "false",
+    "UnderlineThickness": "50",
+    "UnderlinePosition": "-100",
+    "FontHeightOffset": "0",
+    "Ascender": "917",
+    "Descender": "-408",
+    "FontBBox": [
+        "-644",
+        "-408",
+        "1275",
+        "1007"
+    ],
+    "StartCharMetrics": "3",
+    "C": {
+        "32": 260,
+        "2547": 609
+    },
+    "CIDtoGID_Compressed": true,
+    "CIDtoGID": "eJztzkENAAAIxDDAv2hE3IOEtAKWVYU6DQAAAAAAobkeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD+WNhaAAQ=",
+    "_version_": 6
+}
