@@ -63,7 +63,7 @@
                         class="absolute right-2 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-xl text-faint transition hover:bg-surface-2 hover:text-ink"
                         :aria-pressed="show.toString()" aria-label="{{ __('Toggle password visibility') }}">
                     <x-icon name="eye" class="size-4" x-show="!show" />
-                    <x-icon name="eye-off" class="hidden size-4" x-show="show" />
+                    <x-icon name="eye-off" class="size-4" x-show="show" x-cloak />
                 </button>
             </div>
             <ul class="mt-2.5 flex flex-wrap gap-1.5" aria-live="polite">

@@ -7,7 +7,7 @@
                 class="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-faint transition hover:text-ink"
                 aria-label="{{ __('Toggle password visibility') }}">
             <x-icon name="eye" class="size-4" x-show="!show" />
-            <x-icon name="eye-off" class="hidden size-4" x-show="show" />
+            <x-icon name="eye-off" class="size-4" x-show="show" x-cloak />
         </button>
     </div>
 </x-field>

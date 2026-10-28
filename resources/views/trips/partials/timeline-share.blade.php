@@ -33,7 +33,7 @@
                    class="form-field h-10 min-w-0 flex-1 truncate text-[12px]" translate="no">
             <button type="button" @click="copy()" class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-muted transition hover:text-ink" :aria-label="copied ? {{ \Illuminate\Support\Js::from(__('Copied')) }} : {{ \Illuminate\Support\Js::from(__('Copy link')) }}">
                 <x-icon name="copy" class="size-4" x-show="!copied" />
-                <x-icon name="check" class="hidden size-4 text-positive" x-show="copied" />
+                <x-icon name="check" class="size-4 text-positive" x-show="copied" x-cloak />
             </button>
             <a href="{{ $trip->timelineUrl() }}" target="_blank" rel="noopener" class="flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-muted transition hover:text-ink" aria-label="{{ __('Open the public timeline') }}">
                 <x-icon name="arrow-up-right" class="size-4" />

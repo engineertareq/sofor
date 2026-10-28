@@ -293,9 +293,10 @@
                                 {{ trans_choice(':count cost|:count costs', $timeline['costs'], ['count' => Bangla::localize($timeline['costs'])]) }}@if ($timeline['per_person'] !== null) · {{ __(':amount each', ['amount' => $money($timeline['per_person'])]) }}@endif
                             </p>
                             @if ($public)
-                                <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-canvas/15 pt-5">
-                                    <p class="min-w-0 flex-1 text-[13px] text-canvas/75">{{ __('Kept with Sofor: the free way to split trip costs fairly.') }}</p>
-                                    <a href="{{ route('home') }}" class="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#f6b23a] px-4 text-[13px] font-semibold text-ink transition hover:bg-[#ffc65a]">
+                                {{-- Stacked on phones, so the sentence gets the full width; side by side from sm. --}}
+                                <div class="mt-5 flex flex-col gap-3.5 border-t border-canvas/15 pt-5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+                                    <p class="text-pretty text-[13.5px] leading-relaxed text-canvas/75 sm:min-w-0 sm:flex-1 sm:basis-56 sm:text-[13px]">{{ __('Kept with Sofor: the free way to split trip costs fairly.') }}</p>
+                                    <a href="{{ route('home') }}" class="inline-flex h-11 w-full shrink-0 items-center justify-center gap-1.5 rounded-full bg-[#f6b23a] px-4 text-[13.5px] font-semibold text-ink transition hover:bg-[#ffc65a] sm:h-10 sm:w-auto sm:text-[13px]">
                                         {{ __('Plan your trip free') }} <x-icon name="arrow-right" class="size-3.5" />
                                     </a>
                                 </div>
