@@ -1,14 +1,12 @@
 {{-- A read only copy of the trip ledger. The traveller partials are reused with
      every action flag off, so nothing here can add, edit or pay anything. --}}
-<x-layouts.admin :title="$trip->title" :active="'trips'" heading="Trip ledger" :subtitle="$trip->title.' - read only'">
-    <x-slot:actions>
-        <x-btn :href="route('admin.trips.index')" variant="ghost" size="sm" icon="arrow-left" class="hidden sm:inline-flex">All trips</x-btn>
-    </x-slot:actions>
+<x-layouts.admin :title="$trip->title" :active="'trips'" heading="Trip ledger" :subtitle="$trip->title.' - read only'"
+                 :back="route('admin.trips.index')">
 
-    <div class="flex flex-col gap-6">
-        <x-card>
-            <div class="flex flex-wrap items-start gap-4">
-                <span class="flex size-14 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-line shadow-soft"
+    <div class="flex flex-col gap-4 sm:gap-5">
+        <x-card padding="p-4 sm:p-5">
+            <div class="flex flex-wrap items-start gap-3.5">
+                <span class="flex size-12 shrink-0 items-center justify-center rounded-2xl border-[1.5px] border-line shadow-soft"
                       style="background-image: {{ $trip->coverStyle() }}"><x-glyph :name="$trip->icon" class="size-10" /></span>
 
                 <div class="min-w-0 flex-[1_1_14rem]">
@@ -34,12 +32,12 @@
                     </p>
                 </div>
 
-                <div class="flex shrink-0 items-center gap-2">
+                <div class="flex shrink-0 items-center gap-1.5">
                     @if ($trip->isActive())
                         <form method="POST" action="{{ route('admin.trips.end', $trip) }}"
                               onsubmit="return confirm(@js('End '.$trip->title.' on behalf of the leader?'))">
                             @csrf
-                            <x-btn type="submit" variant="outline" size="sm" icon="lock">End trip</x-btn>
+                            <x-admin.action icon="lock" tone="warning">End trip</x-admin.action>
                         </form>
                     @endif
 
@@ -47,7 +45,7 @@
                           onsubmit="return confirm('Delete this trip and all its costs?')">
                         @csrf
                         @method('DELETE')
-                        <x-btn type="submit" variant="ghost" size="sm" icon="trash" class="hover:text-negative">Delete</x-btn>
+                        <x-admin.action icon="trash" tone="danger">Delete</x-admin.action>
                     </form>
                 </div>
             </div>
@@ -64,13 +62,13 @@
 
         @include('trips.partials.summary', ['trip' => $trip, 'ledger' => $ledger, 'canRecord' => false, 'bkashEnabled' => false])
 
-        <div class="grid min-w-0 gap-6 xl:grid-cols-[1.55fr_1fr] xl:items-start">
-            <div class="flex min-w-0 flex-col gap-6">
+        <div class="grid min-w-0 gap-4 sm:gap-5 xl:grid-cols-[1.55fr_1fr] xl:items-start">
+            <div class="flex min-w-0 flex-col gap-4 sm:gap-5">
                 @include('trips.partials.feed', ['trip' => $trip, 'expenses' => $expenses, 'canAddExpense' => false, 'canManage' => false])
                 @include('trips.partials.settle', ['trip' => $trip, 'ledger' => $ledger, 'settlements' => $settlements, 'canRecord' => false, 'bkashEnabled' => false])
             </div>
 
-            <div class="flex min-w-0 flex-col gap-6">
+            <div class="flex min-w-0 flex-col gap-4 sm:gap-5">
                 @include('trips.partials.members', ['trip' => $trip, 'ledger' => $ledger, 'canManage' => false, 'currentMember' => null])
                 @include('trips.partials.breakdown', ['trip' => $trip, 'ledger' => $ledger])
                 @include('trips.partials.activity', ['activities' => $activities])

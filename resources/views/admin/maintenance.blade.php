@@ -5,12 +5,12 @@
 <x-layouts.admin title="Maintenance" :active="'maintenance'" heading="Maintenance mode"
                  subtitle="Close Sofor to everyone except administrators while you work on it.">
     <x-slot:actions>
-        <x-btn :href="route('admin.maintenance.preview')" variant="secondary" size="sm" icon="eye" target="_blank" rel="noopener">
-            Preview page
+        <x-btn :href="route('admin.maintenance.preview')" variant="secondary" size="sm" icon="eye" target="_blank" rel="noopener" title="Preview page" class="max-sm:w-9 max-sm:px-0">
+            <span class="sr-only sm:not-sr-only">Preview page</span>
         </x-btn>
     </x-slot:actions>
 
-    <div class="grid gap-6 xl:grid-cols-[1.4fr_1fr] xl:items-start">
+    <div class="grid gap-4 sm:gap-5 xl:grid-cols-[1.4fr_1fr] xl:items-start">
         <x-card>
             {{-- Status --}}
             @if ($active)

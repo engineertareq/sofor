@@ -1,8 +1,8 @@
 <x-layouts.admin title="Your account" :active="'profile'" heading="Your account"
                  subtitle="Your administrator details and password.">
 
-    <div class="grid gap-6 xl:grid-cols-[1.4fr_1fr] xl:items-start">
-        <div class="flex flex-col gap-6">
+    <div class="grid gap-4 sm:gap-5 xl:grid-cols-[1.4fr_1fr] xl:items-start">
+        <div class="flex flex-col gap-4 sm:gap-5">
             @include('profile.partials.details')
 
             @include('profile.partials.password')

@@ -1,5 +1,5 @@
 <x-layouts.site title="{{ __('About') }}" :heading="__('About Sofor')"
-                 :subtitle="__('A Solutor product built in Dhaka for the way groups travel, spend and settle up.')">
+                 :subtitle="__('Built for the way groups travel, spend and settle up.')">
 
     <section class="flex flex-col gap-3">
         <h2 class="font-display text-lg font-semibold text-ink">{{ __('Why we built it') }}</h2>
@@ -19,23 +19,6 @@
     </section>
 
     <section class="flex flex-col gap-3">
-        <h2 class="font-display text-lg font-semibold text-ink">{{ __('What is coming next') }}</h2>
-        <ul class="flex flex-col gap-2">
-            @foreach ([
-                __('Phone and email verification for stronger accounts'),
-                __('Live payment gateway integration for bKash and EPS'),
-                __('Receipt photo attachments on every cost'),
-                __('Offline-friendly ledger entry for hill tracts with weak signal'),
-            ] as $item)
-                <li class="flex items-start gap-2.5">
-                    <x-icon name="sparkles" class="mt-1 size-3.5 shrink-0 text-brand" />
-                    <span>{{ $item }}</span>
-                </li>
-            @endforeach
-        </ul>
-    </section>
-
-    <section class="flex flex-col gap-3">
         <h2 class="font-display text-lg font-semibold text-ink">{{ __('Talk to the team') }}</h2>
         <div class="grid gap-3 sm:grid-cols-2">
             <div class="rounded-3xl border border-line bg-surface-2 p-4">
@@ -50,8 +33,5 @@
                 </p>
             </div>
         </div>
-        <p class="text-[13px]">
-            {{ __('Build Your Digital Legacy - that is the Solutor promise, and Sofor is one more piece of it.') }}
-        </p>
     </section>
 </x-layouts.site>

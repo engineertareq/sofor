@@ -334,6 +334,8 @@ Route::middleware(['auth', 'traveller', 'verified.contact'])->group(function () 
     Route::delete('/payout-methods/{payoutMethod}', [PayoutMethodController::class, 'destroy'])->name('payout-methods.destroy');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    // The alerts panel's rows, a page at a time.
+    Route::get('/notifications/feed', [NotificationController::class, 'feed'])->middleware('throttle:60,1')->name('notifications.feed');
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
 

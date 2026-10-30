@@ -5,7 +5,7 @@
 <x-layouts.admin title="Branding" :active="'settings'" heading="Branding"
                  subtitle="The logo and favicon used on every page of Sofor.">
 
-    <div class="grid gap-6 xl:grid-cols-2 xl:items-start">
+    <div class="grid gap-4 sm:gap-5 xl:grid-cols-2 xl:items-start">
         {{-- ===================== Logo ===================== --}}
         <x-card x-data="imagePicker({{ BrandingService::LOGO_MAX_KILOBYTES }})">
             <div class="flex flex-wrap items-start justify-between gap-3">

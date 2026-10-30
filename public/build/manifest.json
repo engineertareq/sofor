@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-zlv7CMOJ.css",
+    "file": "assets/app-CCBAkNPF.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -25,12 +25,12 @@
     "src": "resources/fonts/taka/taka-700.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-B7zHvS__.js",
+    "file": "assets/app-Cz74p8mC.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-zlv7CMOJ.css"
+      "assets/app-CCBAkNPF.css"
     ],
     "assets": [
       "assets/taka-400-HKbemyfd.woff2",

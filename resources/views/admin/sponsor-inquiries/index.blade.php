@@ -23,34 +23,12 @@
         <x-btn :href="route('admin.sponsors.index')" variant="secondary" size="sm" icon="building" class="hidden sm:inline-flex">Sponsors</x-btn>
     </x-slot:actions>
 
-    <div class="flex flex-col gap-5">
-        <x-card padding="p-3 sm:p-4">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
-                <nav class="flex items-center gap-1 overflow-x-auto rounded-2xl border border-line bg-surface-2 p-1 no-scrollbar" aria-label="Filter requests">
-                    @foreach ($tabs as $key => $label)
-                        <a href="{{ request()->fullUrlWithQuery(['status' => $key, 'page' => null]) }}" @if ($status === $key) aria-current="page" @endif
-                           @class([
-                               'flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-[13px] font-semibold transition',
-                               'bg-surface text-ink shadow-soft' => $status === $key,
-                               'text-muted hover:text-ink' => $status !== $key,
-                           ])>
-                            {{ $label }}
-                            <span @class([
-                                'num rounded-full px-1.5 text-[10.5px]',
-                                'bg-negative text-white' => $key === 'new' && $counts['new'] > 0,
-                                'bg-surface-2 text-faint' => ! ($key === 'new' && $counts['new'] > 0),
-                            ])>{{ $counts[$key] }}</span>
-                        </a>
-                    @endforeach
-                </nav>
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <x-admin.tabs :tabs="$tabs" :current="$status" :counts="$counts" urgent="new" label="Filter requests" class="self-start" />
 
-                <form method="GET" class="lg:ml-auto lg:w-72">
-                    <input type="hidden" name="status" value="{{ $status }}">
-                    <label for="q" class="sr-only">Search requests</label>
-                    <x-input name="q" type="search" :value="$search" icon="search" placeholder="Search name, brand or email" />
-                </form>
-            </div>
-        </x-card>
+            <x-admin.search :value="$search" placeholder="Search name, brand or email" :keep="['status' => $status]" class="sm:ml-auto sm:w-72" />
+        </div>
 
         @if ($inquiries->isEmpty())
             <x-card class="flex flex-col items-center px-6 py-14 text-center">
@@ -66,12 +44,12 @@
                 </p>
             </x-card>
         @else
-            <ul class="flex flex-col gap-3">
+            <ul class="flex flex-col gap-2.5">
                 @foreach ($inquiries as $inquiry)
                     @php $isNew = $inquiry->status === SponsorInquiry::STATUS_NEW; @endphp
                     <li>
                         <article @class([
-                            'group relative flex flex-col gap-3 overflow-hidden rounded-4xl border bg-surface p-4 transition hover:-translate-y-0.5 hover:shadow-lift sm:flex-row sm:items-start sm:gap-4 sm:p-5',
+                            'group relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-2.5 overflow-hidden rounded-4xl border bg-surface p-3.5 transition hover:-translate-y-0.5 hover:shadow-lift sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:gap-x-4 sm:p-4',
                             'border-brand/35' => $isNew,
                             'border-line' => ! $isNew,
                         ])>
@@ -79,7 +57,7 @@
                                 <span class="absolute inset-y-0 left-0 w-1 bg-brand" aria-hidden="true"></span>
                             @endif
 
-                            <x-avatar :name="$inquiry->company" size="md" class="shrink-0" />
+                            <x-avatar :name="$inquiry->company" size="sm" class="shrink-0" />
 
                             <div class="min-w-0 flex-1">
                                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -98,15 +76,15 @@
                                         <span class="text-faint">&middot;</span> <span class="num">{{ $inquiry->phone }}</span>
                                     @endif
                                 </p>
-                                <p class="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink/80">{{ $inquiry->message }}</p>
+                                <p class="mt-1.5 line-clamp-2 text-[12.5px] leading-relaxed text-ink/80">{{ $inquiry->message }}</p>
                             </div>
 
-                            <div class="flex shrink-0 items-center justify-between gap-3 sm:flex-col sm:items-end">
+                            <div class="col-span-2 flex items-center justify-between gap-3 sm:col-span-1 sm:flex-col sm:items-end">
                                 <time datetime="{{ $inquiry->created_at->toIso8601String() }}" title="{{ $inquiry->created_at->format('d M Y, H:i') }}"
                                       class="text-[11.5px] text-faint">{{ $inquiry->created_at->diffForHumans() }}</time>
                                 <span class="relative z-10 flex items-center gap-1.5">
                                     <a href="mailto:{{ $inquiry->email }}?subject={{ rawurlencode('Sponsoring Sofor - '.$inquiry->company) }}"
-                                       class="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[12px] font-semibold text-muted transition hover:border-brand/40 hover:text-brand">
+                                       class="inline-flex h-7 items-center gap-1 rounded-lg border border-line bg-surface px-2.5 text-[11.5px] font-semibold text-muted transition hover:border-brand/40 hover:text-brand">
                                         <x-icon name="mail" class="size-3.5" /> Reply
                                     </a>
                                     @if ($isNew)
@@ -115,7 +93,7 @@
                                             @method('PUT')
                                             <input type="hidden" name="status" value="{{ SponsorInquiry::STATUS_CONTACTED }}">
                                             <button type="submit"
-                                                    class="inline-flex h-8 items-center gap-1.5 rounded-full bg-brand px-3 text-[12px] font-semibold text-white transition hover:bg-brand-2">
+                                                    class="inline-flex h-7 items-center gap-1 rounded-lg bg-brand px-2.5 text-[11.5px] font-semibold text-white transition hover:bg-brand-2">
                                                 <x-icon name="check" class="size-3.5" /> Contacted
                                             </button>
                                         </form>

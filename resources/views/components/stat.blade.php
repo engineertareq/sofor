@@ -24,7 +24,7 @@
     <div class="flex items-start justify-between gap-2">
         <p class="eyebrow min-w-0 line-clamp-2 max-[359px]:tracking-[0.08em]">{{ \App\Support\Lang::t($label) }}</p>
         @if ($icon)
-            <span class="flex size-8 shrink-0 items-center justify-center rounded-xl sm:size-9 {{ $tones[$tone] ?? $tones['brand'] }}">
+            <span class="stat-icon flex size-8 shrink-0 items-center justify-center rounded-xl sm:size-9 {{ $tones[$tone] ?? $tones['brand'] }}">
                 <x-icon :name="$icon" class="size-4 sm:size-4.5" />
             </span>
         @endif

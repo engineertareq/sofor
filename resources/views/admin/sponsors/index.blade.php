@@ -13,8 +13,8 @@
         <x-btn href="#add-sponsor" size="sm" icon="plus" class="inline-flex xl:hidden">Add</x-btn>
     </x-slot:actions>
 
-    <div class="flex flex-col gap-6">
-        <section class="grid grid-cols-3 gap-3">
+    <div class="flex flex-col gap-4 sm:gap-5">
+        <section class="grid grid-cols-3 gap-2.5 sm:gap-3">
             <x-stat label="Live" :value="$counts['live']" icon="eye" tone="lime" hint="On the site now" />
             <x-stat label="Hidden" :value="$counts['hidden']" icon="eye-off" tone="slate" hint="Kept for later" />
             <a href="{{ route('admin.sponsor-inquiries.index') }}" class="block">
@@ -23,9 +23,9 @@
             </a>
         </section>
 
-        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
+        <div class="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_23rem] xl:items-start">
             {{-- ===================== The sponsors, by tier ===================== --}}
-            <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-4 sm:gap-5">
                 @foreach ($byTier as $tier => $group)
                     <x-card padding="p-0">
                         <div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4">

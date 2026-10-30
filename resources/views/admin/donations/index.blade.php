@@ -1,9 +1,9 @@
 <x-layouts.admin title="Support" :active="'donations'" heading="Supporters"
                  subtitle="Voluntary gifts collected through bKash Checkout." wide>
 
-    <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-4">
         @if (! $bkashEnabled)
-            <div class="flex items-start gap-2.5 rounded-3xl border border-warning/40 bg-warning-tint p-4 text-[13px] text-warning">
+            <div class="flex items-start gap-2.5 rounded-2xl border border-warning/40 bg-warning-tint p-4 text-[13px] text-warning">
                 <x-icon name="alert" class="mt-0.5 size-4 shrink-0" />
                 <p>bKash is not configured, so the donate button is hidden and no gift can be collected right now.</p>
             </div>
@@ -16,47 +16,27 @@
             <x-stat label="Net received" :value="\App\Support\Money::format($totals['net'])" hint="After bKash's fee" icon="wallet" tone="violet" />
         </section>
 
-        <x-card padding="p-4">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
-                <div class="flex items-center gap-1 overflow-x-auto rounded-2xl border border-line bg-surface-2 p-1 no-scrollbar">
-                    @foreach (['completed' => 'Completed', 'pending' => 'Pending', 'cancelled' => 'Cancelled', 'failed' => 'Failed', 'all' => 'All'] as $key => $label)
-                        <a href="{{ request()->fullUrlWithQuery(['status' => $key, 'page' => null]) }}"
-                           @class([
-                               'whitespace-nowrap rounded-xl px-3.5 py-2 text-[13px] font-semibold transition',
-                               'bg-surface text-ink shadow-soft' => $status === $key,
-                               'text-muted hover:text-ink' => $status !== $key,
-                           ])>{{ $label }}</a>
-                    @endforeach
-                </div>
+        <x-admin.tabs :tabs="['completed' => 'Completed', 'pending' => 'Pending', 'cancelled' => 'Cancelled', 'failed' => 'Failed', 'all' => 'All']"
+                      :current="$status" :counts="$counts + ['all' => array_sum($counts)]" label="Gift status" class="self-start" />
 
-                <div class="flex flex-wrap items-center gap-3 text-[12px] text-muted lg:ml-auto">
-                    <span>{{ $counts['completed'] }} completed</span>
-                    <span class="text-faint">/</span>
-                    <span>{{ $counts['pending'] }} pending</span>
-                    <span class="text-faint">/</span>
-                    <span>{{ $counts['cancelled'] + $counts['failed'] }} closed</span>
-                </div>
-            </div>
-        </x-card>
-
-        <x-card padding="p-0">
+        <x-card padding="p-0" class="overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[820px] text-left text-[13px]">
+                <table class="max-md:table-cards w-full text-left text-[13px]">
                     <thead class="border-b border-line text-[10px] uppercase tracking-wide text-faint">
                         <tr>
-                            <th class="px-5 py-3 font-semibold">Supporter</th>
-                            <th class="px-3 py-3 font-semibold">Contact</th>
-                            <th class="px-3 py-3 text-center font-semibold">Status</th>
-                            <th class="px-3 py-3 text-right font-semibold">Gift</th>
-                            <th class="px-3 py-3 text-right font-semibold">bKash fee</th>
-                            <th class="px-5 py-3 text-right font-semibold">Donor paid</th>
-                            <th class="px-5 py-3 text-right font-semibold">bKash reference</th>
+                            <th class="px-4 py-2.5 font-semibold">Supporter</th>
+                            <th class="px-3 py-2.5 font-semibold">Contact</th>
+                            <th class="px-3 py-2.5 text-center font-semibold">Status</th>
+                            <th class="px-3 py-2.5 text-right font-semibold">Gift</th>
+                            <th class="px-3 py-2.5 text-right font-semibold">bKash fee</th>
+                            <th class="px-3 py-2.5 text-right font-semibold">Donor paid</th>
+                            <th class="px-4 py-2.5 text-right font-semibold">bKash reference</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-line">
                         @forelse ($donations as $donation)
                             <tr class="transition hover:bg-surface-2">
-                                <td class="px-5 py-3">
+                                <td class="px-4 py-2.5">
                                     <div class="flex items-center gap-3">
                                         <x-avatar :name="$donation->donorLabel()" size="xs" class="size-8 rounded-xl text-[10px]" />
                                         <div class="min-w-0">
@@ -68,8 +48,8 @@
                                         <p class="mt-1.5 max-w-xs truncate text-[11px] italic text-muted">"{{ $donation->message }}"</p>
                                     @endif
                                 </td>
-                                <td class="px-3 py-3 text-muted">{{ $donation->contact ?: '-' }}</td>
-                                <td class="px-3 py-3 text-center">
+                                <td class="px-3 py-2.5 text-muted" data-label="Contact"><span class="block truncate">{{ $donation->contact ?: '-' }}</span></td>
+                                <td class="px-3 py-2.5 text-center" data-label="Status">
                                     @php
                                         $tone = match ($donation->status) {
                                             \App\Models\Donation::STATUS_COMPLETED => 'lime',
@@ -77,12 +57,12 @@
                                             default => 'slate',
                                         };
                                     @endphp
-                                    <x-badge :tone="$tone">{{ ucfirst($donation->status) }}</x-badge>
+                                    <x-badge :tone="$tone" size="sm">{{ ucfirst($donation->status) }}</x-badge>
                                 </td>
-                                <td class="px-3 py-3 text-right font-semibold text-ink">{{ $donation->amountLabel() }}</td>
-                                <td class="px-3 py-3 text-right text-muted">{{ \App\Support\Money::format($donation->charge) }}</td>
-                                <td class="px-5 py-3 text-right font-semibold text-brand">{{ $donation->totalLabel() }}</td>
-                                <td class="px-5 py-3 text-right font-mono text-[11px] text-faint">{{ $donation->trx_id ?: $donation->payment_id ?: '-' }}</td>
+                                <td class="whitespace-nowrap px-3 py-2.5 text-right font-semibold text-ink" data-label="Gift">{{ $donation->amountLabel() }}</td>
+                                <td class="whitespace-nowrap px-3 py-2.5 text-right text-muted" data-label="bKash fee">{{ \App\Support\Money::format($donation->charge) }}</td>
+                                <td class="whitespace-nowrap px-3 py-2.5 text-right font-semibold text-brand" data-label="Donor paid">{{ $donation->totalLabel() }}</td>
+                                <td class="cell-wide px-4 py-2.5 text-right font-mono text-[11px] text-faint" data-label="bKash reference"><span class="block truncate">{{ $donation->trx_id ?: $donation->payment_id ?: '-' }}</span></td>
                             </tr>
                         @empty
                             <tr>

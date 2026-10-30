@@ -9,9 +9,9 @@
         <x-btn :href="route('admin.users.index')" variant="secondary" size="sm" icon="users" class="hidden sm:inline-flex">Manage users</x-btn>
     </x-slot:actions>
 
-    <div class="flex flex-col gap-6">
+    <div class="flex flex-col gap-4 sm:gap-5">
         {{-- Headline stats --}}
-        <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <section class="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
             <x-stat label="Travellers" :value="number_format($stats['users'])" icon="users" tone="brand"
                     :hint="'+'.$stats['new_users_7d'].' this week'" trend="up" />
             <x-stat label="Trips" :value="number_format($stats['trips']['total'])" icon="compass" tone="accent"
@@ -23,7 +23,7 @@
         </section>
 
         {{-- Supporters: the voluntary income that keeps Sofor running --}}
-        <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <section class="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-4">
             <x-stat label="Support raised" :value="\App\Support\Money::format($stats['donations']['raised'])" icon="gift" tone="lime"
                     :hint="$stats['donations']['count'].' completed gift'.($stats['donations']['count'] === 1 ? '' : 's')" />
             <x-stat label="MFS fees paid" :value="\App\Support\Money::format($stats['donations']['fees'])" icon="card" tone="amber"
@@ -36,10 +36,10 @@
             </a>
         </section>
 
-        <div class="grid gap-6 xl:grid-cols-[1.6fr_1fr] xl:items-start">
-            <div class="flex flex-col gap-6">
+        <div class="grid gap-4 sm:gap-5 xl:grid-cols-[1.6fr_1fr] xl:items-start">
+            <div class="flex flex-col gap-4 sm:gap-5">
                 {{-- Signups chart --}}
-                <x-card>
+                <x-card padding="p-4 sm:p-5">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <h2 class="font-display text-sm font-semibold">New travellers - last 14 days</h2>
@@ -65,8 +65,8 @@
                         </a>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-[13px]">
+                    <div class="overflow-x-auto border-t border-line md:border-t-0">
+                        <table class="max-md:table-cards w-full text-left text-[13px] [--card-cols:4]">
                             <thead class="border-y border-line text-[10px] uppercase tracking-wide text-faint">
                                 <tr>
                                     <th class="px-5 py-2.5 font-semibold">Trip</th>
@@ -88,10 +88,10 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-3 py-3 text-muted">{{ $trip->owner?->name }}</td>
-                                        <td class="px-3 py-3 text-right text-muted">{{ $trip->members_count }}</td>
-                                        <td class="px-3 py-3 text-right text-muted">{{ $trip->expenses_count }}</td>
-                                        <td class="px-5 py-3 text-right font-semibold text-ink">{{ \App\Support\Money::format($trip->expenses_sum_amount, $trip->currency) }}</td>
+                                        <td class="px-3 py-3 text-muted" data-label="Leader"><span class="block truncate">{{ $trip->owner?->name }}</span></td>
+                                        <td class="px-3 py-3 text-right text-muted" data-label="Travellers">{{ $trip->members_count }}</td>
+                                        <td class="px-3 py-3 text-right text-muted" data-label="Costs">{{ $trip->expenses_count }}</td>
+                                        <td class="whitespace-nowrap px-5 py-3 text-right font-semibold text-ink" data-label="Spend">{{ \App\Support\Money::format($trip->expenses_sum_amount, $trip->currency) }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -104,7 +104,7 @@
                 </x-card>
 
                 {{-- Recent activity --}}
-                <x-card>
+                <x-card padding="p-4 sm:p-5">
                     <h2 class="font-display text-sm font-semibold">Live activity feed</h2>
                     @if ($recentActivity->isEmpty())
                         <p class="mt-3 text-[13px] text-muted">Nothing logged yet.</p>
@@ -135,7 +135,7 @@
                 </x-card>
             </div>
 
-            <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-4 sm:gap-5">
                 {{-- Brands waiting for a reply about sponsoring --}}
                 <x-card padding="p-0">
                     <div class="flex items-center justify-between gap-3 px-5 py-4">
@@ -170,7 +170,7 @@
                     @endif
                 </x-card>
 
-                <x-card>
+                <x-card padding="p-4 sm:p-5">
                     <h2 class="font-display text-sm font-semibold">Spend by category</h2>
                     <p class="text-[11px] text-faint">Across every trip on the platform</p>
 
@@ -191,12 +191,12 @@
                     @endif
                 </x-card>
 
-                <x-card>
+                <x-card padding="p-4 sm:p-5">
                     <h2 class="font-display text-sm font-semibold">Trips created per month</h2>
                     <x-chart-bars :series="$monthlySeries" class="mt-4" height="h-28" tone="violet" />
                 </x-card>
 
-                <x-card>
+                <x-card padding="p-4 sm:p-5">
                     <h2 class="font-display text-sm font-semibold">Platform health</h2>
                     <ul class="mt-4 flex flex-col divide-y divide-line text-[13px]">
                         @foreach ([

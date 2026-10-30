@@ -128,7 +128,10 @@ function catchUp() {
    Reloading without getting in the way
 ------------------------------------------------------------------------- */
 
-const shown = (element) => element.isConnected && element.getClientRects().length > 0;
+// On screen: laid out and not visibility:hidden (the phone menu waits hidden that way).
+const shown = (element) => element.isConnected && (element.checkVisibility
+    ? element.checkVisibility({ visibilityProperty: true })
+    : element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden');
 
 /** A field changed from what the page came with. */
 function unsent(field) {

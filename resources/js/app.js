@@ -14,6 +14,8 @@ import './map-tips';
 import './bkash-checkout';
 import { bootOffline, uuid } from './offline';
 import { bootTabSync } from './tab-sync';
+import { sheets, sheet } from './sheet';
+import alerts from './alerts';
 // The taka sign (৳) and Bangla digits for the recap card's exported PNG: about 2 KB each.
 import takaRegular from '../fonts/taka/taka-400.woff2?inline';
 import takaBold from '../fonts/taka/taka-700.woff2?inline';
@@ -105,6 +107,9 @@ Alpine.data('siteNav', siteNav);
 Alpine.data('splitCalculator', splitCalculator);
 Alpine.data('tripTimeline', tripTimeline);
 Alpine.data('avatarCropper', avatarCropper);
+Alpine.store('sheets', sheets);
+Alpine.data('sheet', sheet);
+Alpine.data('alerts', alerts);
 
 /**
  * The texted code field (components/code-input): keeps digits only, draws
