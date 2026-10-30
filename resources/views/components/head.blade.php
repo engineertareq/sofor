@@ -57,6 +57,12 @@
     <meta name="theme-color" content="#fbf8f2">
     <meta name="color-scheme" content="light">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if (request()->hasSession() && request()->isMethod('GET'))
+        {{-- Who this page was made for, in which language and when, so the other
+             open tabs follow a sign in, a sign out or a new language (resources/js/tab-sync.js). --}}
+        <meta name="sofor-session" data-user="{{ auth()->id() }}" data-locale="{{ \App\Http\Middleware\SetLocale::remembered(request()) }}"
+              data-at="{{ (int) round(request()->server('REQUEST_TIME_FLOAT', microtime(true)) * 1000) }}">
+    @endif
 
     <title>{{ $fullTitle }}</title>
     <meta name="description" content="{{ $description }}">

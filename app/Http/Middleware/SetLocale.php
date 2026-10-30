@@ -23,26 +23,31 @@ class SetLocale
 
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
         $asked = $request->query(Seo::PARAM);
 
         if (is_string($asked) && array_key_exists($asked, self::LOCALES)) {
             $locale = $asked;
             $request->hasSession() && $request->session()->put('locale', $asked);
         } else {
-            $locale = $user?->locale
-                ?? ($request->hasSession() ? $request->session()->get('locale') : null)
-                ?? self::defaultFor($user);
-        }
-
-        if (! array_key_exists((string) $locale, self::LOCALES)) {
-            $locale = self::defaultFor($user);
+            $locale = self::remembered($request);
         }
 
         app()->setLocale($locale);
         Carbon::setLocale($locale);
 
         return $next($request);
+    }
+
+    /**
+     * The language this visit has settled on: the one a page without ?lang=
+     * is shown in. The other open tabs follow it (resources/js/tab-sync.js).
+     */
+    public static function remembered(Request $request): string
+    {
+        $user = $request->user();
+        $locale = $user?->locale ?? ($request->hasSession() ? $request->session()->get('locale') : null);
+
+        return array_key_exists((string) $locale, self::LOCALES) ? $locale : self::defaultFor($user);
     }
 
     /** The language for someone who has not picked one: the console is English, everything else Bangla. */

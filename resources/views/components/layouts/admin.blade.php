@@ -48,7 +48,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <x-head :title="$title ? $title.' - Admin' : 'Admin'" :description="'Sofor admin console.'" :noindex="true" :manifest="false" />
 
-<body class="relative min-h-dvh bg-canvas-tint font-sans text-ink antialiased">
+{{-- data-reload-on-change: whatever is saved in another console tab shows up here too. --}}
+<body class="relative min-h-dvh bg-canvas-tint font-sans text-ink antialiased" data-reload-on-change>
     <x-skip-link />
 
     <div x-data="{ menu: false }" @keydown.escape.window="menu = false"

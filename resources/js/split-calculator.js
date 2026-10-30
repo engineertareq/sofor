@@ -37,13 +37,43 @@ export default function splitCalculator({ labels }) {
                 this.people = [{ name: '', paid: '' }, { name: '', paid: '' }, { name: '', paid: '' }];
             }
 
+            // The list last heard from another tab. Writing it back could land after newer
+            // typing there and undo it, so it is never written back.
+            let heard = null;
+
             this.$watch('people', (people) => {
+                const list = JSON.stringify(people);
+
+                if (list === heard) {
+                    return;
+                }
+
+                heard = null;
+
                 try {
-                    localStorage.setItem(STORE, JSON.stringify(people));
+                    localStorage.setItem(STORE, list);
                 } catch (error) {
                     // Private window: the calculator still works, it just forgets on refresh.
                 }
             }, { deep: true });
+
+            // The calculator open in another tab: keep one list, so neither overwrites the other.
+            window.addEventListener('storage', (event) => {
+                if (event.key !== STORE || !event.newValue) {
+                    return;
+                }
+
+                try {
+                    const people = JSON.parse(event.newValue);
+
+                    if (Array.isArray(people) && people.length >= 2) {
+                        heard = JSON.stringify(people.slice(0, 30));
+                        this.people = people.slice(0, 30);
+                    }
+                } catch (error) {
+                    // Not a list this calculator wrote.
+                }
+            });
         },
 
         label(index) {

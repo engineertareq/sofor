@@ -55,6 +55,7 @@ export function uuid() {
 }
 
 import { t, num } from './i18n';
+import { announce, hear, changed } from './tab-sync';
 
 const toast = (message, type = 'info') => window.Sofor?.toast(message, type);
 
@@ -104,6 +105,7 @@ function onSubmit(event) {
             toast(t('No signal - the cost is saved on this phone and will be sent when you are back online.'), 'success');
             form.dispatchEvent(new CustomEvent('sofor-queued', { bubbles: true }));
             render();
+            announce('queue');
         })
         .catch(() => toast(t('This browser could not save the cost offline. Keep the details and try again with signal.'), 'error'));
 }
@@ -145,13 +147,26 @@ async function send(item, token) {
     });
 }
 
-export async function flush() {
+/**
+ * One tab at a time sends the queue. Two would send every cost twice: the
+ * server keeps one, but both tabs would announce it.
+ */
+export function flush() {
+    if (!navigator.locks) {
+        return drain();
+    }
+
+    return navigator.locks.request('sofor-offline-flush', { ifAvailable: true }, (lock) => lock && drain());
+}
+
+async function drain() {
     if (flushing || !navigator.onLine) {
         return;
     }
 
     flushing = true;
     let synced = 0;
+    let dropped = 0;
 
     try {
         const items = await queue.all();
@@ -193,6 +208,7 @@ export async function flush() {
                 }
 
                 await queue.remove(item.id);
+                dropped++;
                 toast(reason ? t('":title" could not be saved: :reason. Add it again.', { title: item.title, reason }) : t('":title" could not be saved. Add it again.', { title: item.title }), 'error');
             }
         }
@@ -202,9 +218,15 @@ export async function flush() {
         flushing = false;
         render();
 
+        if (synced + dropped > 0) {
+            announce('queue');
+        }
+
         if (synced > 0) {
             toast(synced === 1 ? t('Back online - 1 cost saved offline was added.') : t('Back online - :count costs saved offline were added.', { count: num(synced) }), 'success');
             document.dispatchEvent(new CustomEvent('sofor-synced', { detail: { count: synced } }));
+            window.Sofor?.refreshTrip?.();
+            changed();
         }
     }
 }
@@ -287,6 +309,8 @@ export function bootOffline() {
     window.addEventListener('online', () => flush());
     document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && flush());
     setInterval(() => flush(), 60000);
+    // A cost queued or sent from another tab.
+    hear('queue', () => render());
 
     render();
     flush();

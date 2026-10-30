@@ -31,7 +31,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <x-head :title="$title" :description="__('Your Sofor trips and money ledger.')" :noindex="true" />
 
-<body class="relative min-h-dvh bg-canvas font-sans text-ink antialiased">
+{{-- data-reload-on-change: a cost, payment or alert saved in another tab brings this page up to date. --}}
+<body class="relative min-h-dvh bg-canvas font-sans text-ink antialiased" data-reload-on-change>
     <x-skip-link />
     <x-backdrop />
 

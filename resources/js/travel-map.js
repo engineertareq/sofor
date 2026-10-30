@@ -1,4 +1,5 @@
 import { t, num, locale } from './i18n';
+import { changed } from './tab-sync';
 /**
  * The travel map page: tap areas on the map or in the list to mark them,
  * accept suggestions from trips, and download the map as a PNG.
@@ -126,6 +127,37 @@ export default (config) => ({
         // Keep the SVG's classes in step with what is visited.
         this.$watch('visited', () => this.paint());
         this.paint();
+
+        // The same map open in another tab: show its marks here too, so neither overwrites the other.
+        window.addEventListener('storage', (event) => this.restore(event));
+    },
+
+    /**
+     * Another tab changed what this browser keeps for the map maker. Marks are
+     * only written on a tap, so taking them here never writes them back.
+     */
+    restore({ key, newValue }) {
+        if (key === draftKey(this.map.key)) {
+            const ids = readDraft(this.map.key).filter((id) => this.byId[id]);
+
+            if (this.local) {
+                this.visited = Object.fromEntries(ids.map((id) => [id, true]));
+            } else {
+                this.draft = ids;
+            }
+        } else if (this.local && key !== NAME_KEY && key?.startsWith(draftKey(''))) {
+            const tab = key.slice(draftKey('').length);
+
+            if (tab in this.map.tabs) {
+                this.map.tabs[tab] = readDraft(tab).length;
+            }
+        } else if (key === this.dismissKey()) {
+            try {
+                this.dismissed = JSON.parse(newValue ?? '[]');
+            } catch (error) {
+                this.dismissed = [];
+            }
+        }
     },
 
     // ------------------------------------------------------------ state
@@ -346,6 +378,7 @@ export default (config) => ({
             }
 
             this.visited = Object.fromEntries(data.visited.map((id) => [id, true]));
+            changed();
 
             // A first district also put its country on the world map.
             if (data.country && this.map.worldKey in this.map.tabs) {

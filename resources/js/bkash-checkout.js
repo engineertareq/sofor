@@ -1,4 +1,5 @@
 import { t } from './i18n';
+import { changed } from './tab-sync';
 /**
  * bKash Checkout, browser flow.
  *
@@ -177,6 +178,7 @@ async function pay({ scriptUrl, createUrl, executeUrl, amount, payload = {}, onS
                 .then((data) => {
                     settle(bkash, true);
                     toast(data.message || t('Payment received.'), 'success');
+                    changed();
                     onDone?.(data);
                 })
                 .catch((error) => {

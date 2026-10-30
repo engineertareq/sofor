@@ -57,8 +57,18 @@
                                     </div>
                                 </td>
                                 <td class="px-3 py-3 text-muted">
-                                    <p class="truncate">{{ $user->email ?: '-' }}</p>
-                                    <p class="text-[10px] text-faint">{{ $user->phone ? \App\Support\Phone::pretty($user->phone) : '-' }}</p>
+                                    <p class="flex items-center gap-2">
+                                        <span class="min-w-0 truncate">{{ $user->email ?: '-' }}</span>
+                                        @if ($user->email)
+                                            <x-verified :at="$user->hasVerifiedEmail() ? $user->email_verified_at : null" />
+                                        @endif
+                                    </p>
+                                    <p class="mt-1 flex items-center gap-2 text-[10px] text-faint">
+                                        <span class="num">{{ $user->phone ? \App\Support\Phone::pretty($user->phone) : '-' }}</span>
+                                        @if ($user->phone)
+                                            <x-verified :at="$user->hasVerifiedPhone() ? $user->phone_verified_at : null" />
+                                        @endif
+                                    </p>
                                 </td>
                                 <td class="px-3 py-3 text-center text-muted">
                                     {{ $user->owned_trips_count }} led / {{ $user->memberships_count }} joined

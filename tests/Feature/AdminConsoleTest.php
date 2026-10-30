@@ -37,6 +37,25 @@ class AdminConsoleTest extends TestCase
         $this->actingAs($admin)->get(route('admin.users.show', $leader))->assertOk();
     }
 
+    public function test_the_console_shows_whether_each_email_and_phone_is_verified(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $traveller = User::factory()->create(['email' => 'nusrat@example.com', 'phone' => '+8801711000003']);
+        $traveller->forceFill(['email_verified_at' => now(), 'phone_verified_at' => null])->save();
+        $emailOnly = User::factory()->create(['email' => 'rafi@example.com', 'phone' => null]);
+
+        $this->actingAs($admin)->get(route('admin.users.index', ['q' => 'nusrat']))
+            ->assertSeeInOrder(['nusrat@example.com', 'Verified', '+880 1711-000003', 'Not verified']);
+
+        $this->actingAs($admin)->get(route('admin.users.show', $traveller))
+            ->assertSeeInOrder(['Email', 'nusrat@example.com', 'Verified', 'Phone', '+880 1711-000003', 'Not verified', 'Joined']);
+
+        // No number, nothing to verify.
+        $this->actingAs($admin)->get(route('admin.users.show', $emailOnly))
+            ->assertSeeInOrder(['rafi@example.com', 'Verified', 'Phone', '-', 'Joined'])
+            ->assertDontSee('Not verified');
+    }
+
     public function test_an_administrator_can_pause_an_account_but_not_their_own(): void
     {
         $admin = User::factory()->admin()->create();

@@ -13,6 +13,7 @@ import avatarCropper from './avatar-cropper';
 import './map-tips';
 import './bkash-checkout';
 import { bootOffline, uuid } from './offline';
+import { bootTabSync } from './tab-sync';
 // The taka sign (৳) and Bangla digits for the recap card's exported PNG: about 2 KB each.
 import takaRegular from '../fonts/taka/taka-400.woff2?inline';
 import takaBold from '../fonts/taka/taka-700.woff2?inline';
@@ -699,6 +700,7 @@ function bootReveal() {
 
 document.addEventListener('DOMContentLoaded', () => {
     bootToasts();
+    bootTabSync();
     bootTripLive();
     bootReveal();
     bootOffline();

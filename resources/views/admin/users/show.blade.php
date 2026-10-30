@@ -17,8 +17,20 @@
 
                 <ul class="mt-5 flex flex-col divide-y divide-line text-[13px]">
                     @foreach ([
-                        ['Email', $user->email ?: '-'],
-                        ['Phone', $user->phone ? \App\Support\Phone::pretty($user->phone) : '-'],
+                        ['Email', $user->email, $user->hasVerifiedEmail() ? $user->email_verified_at : null],
+                        ['Phone', $user->phone ? \App\Support\Phone::pretty($user->phone) : null, $user->hasVerifiedPhone() ? $user->phone_verified_at : null],
+                    ] as [$label, $value, $verifiedAt])
+                        <li class="flex items-center justify-between gap-4 py-2.5">
+                            <span class="shrink-0 text-muted">{{ $label }}</span>
+                            <span class="flex min-w-0 items-center gap-2">
+                                <span class="truncate font-medium text-ink" title="{{ $value }}">{{ $value ?? '-' }}</span>
+                                @if ($value)
+                                    <x-verified :at="$verifiedAt" />
+                                @endif
+                            </span>
+                        </li>
+                    @endforeach
+                    @foreach ([
                         ['Joined', $user->created_at->format('d M Y')],
                         ['Last seen', $user->last_seen_at?->diffForHumans() ?? 'Never'],
                         ['Trips led', $stats['trips_led']],
