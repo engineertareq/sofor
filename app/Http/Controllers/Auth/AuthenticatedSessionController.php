@@ -72,7 +72,7 @@ class AuthenticatedSessionController extends Controller
         if ($user->isAdmin()) {
             $request->session()->forget(TripJoinController::SESSION_KEY);
 
-            return redirect()->intended(route('admin.dashboard'))->with('status', __('Welcome back, :user!', ['user' => $user->name]));
+            return $this->intendedFor($request, $user)->with('status', __('Welcome back, :user!', ['user' => $user->name]));
         }
 
         $claimed = $invitations->claimPendingFor($user);
@@ -92,7 +92,7 @@ class AuthenticatedSessionController extends Controller
                 : __(':count pending trip invites have been added to your trips.', ['count' => $claimed->count()]));
         }
 
-        return redirect()->intended(route('dashboard'))->with('status', $message);
+        return $this->intendedFor($request, $user)->with('status', $message);
     }
 
     public function destroy(Request $request): RedirectResponse

@@ -67,6 +67,22 @@ trait HandlesPendingInvites
                 : __('We also added you to :count pending trip invites.', ['count' => $claimed->count()]));
         }
 
-        return redirect()->intended(route('dashboard'))->with('status', $message);
+        return $this->intendedFor($request, $user)->with('status', $message);
+    }
+
+    /**
+     * Where they meant to go before signing in, when it is a page for this kind
+     * of account; their home page otherwise. The browser's session remembers the
+     * address, so it can belong to whoever used it last: an admin page reloaded
+     * after an admin signed out must not send the next traveller to /admin.
+     */
+    protected function intendedFor(Request $request, User $user): RedirectResponse
+    {
+        $intended = (string) $request->session()->pull('url.intended', '');
+        $path = '/'.ltrim((string) parse_url($intended, PHP_URL_PATH), '/');
+        $console = $path === '/admin' || str_starts_with($path, '/admin/');
+        $ours = str_starts_with($intended, url('/').'/') || $intended === url('/');
+
+        return redirect()->to($ours && $console === $user->isAdmin() ? $intended : $user->homeUrl());
     }
 }

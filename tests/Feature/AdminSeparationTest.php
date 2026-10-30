@@ -16,6 +16,35 @@ class AdminSeparationTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * The page a browser remembers to return to belongs to whoever used it last.
+     * Signing in only goes back to it when it is a page for this kind of account.
+     */
+    public function test_signing_in_never_lands_a_traveller_in_the_console_or_an_admin_in_the_app(): void
+    {
+        $traveller = User::factory()->create(['email' => 'rafi@example.com', 'password' => 'password123']);
+        $admin = User::factory()->admin()->create(['email' => 'admin@example.com', 'password' => 'password123']);
+        $signIn = fn (string $email, string $remembered) => $this->withSession(['url.intended' => $remembered])
+            ->post(route('login.store'), ['login' => $email, 'password' => 'password123']);
+
+        // An admin page left behind by an admin who signed out.
+        $signIn('rafi@example.com', url('/admin/users'))->assertRedirect(route('dashboard'));
+        auth()->logout();
+
+        // A traveller's own page is still where they meant to go.
+        $signIn('rafi@example.com', url('/balances'))->assertRedirect(url('/balances'));
+        auth()->logout();
+
+        $signIn('admin@example.com', url('/balances'))->assertRedirect(route('admin.dashboard'));
+        auth()->logout();
+
+        $signIn('admin@example.com', url('/admin/users'))->assertRedirect(url('/admin/users'));
+        auth()->logout();
+
+        // Nothing remembered, or somewhere off the site: home.
+        $signIn('rafi@example.com', 'https://evil.example/admin')->assertRedirect(route('dashboard'));
+    }
+
     /** @return array{0: Trip, 1: User} */
     private function tripWithACost(): array
     {
