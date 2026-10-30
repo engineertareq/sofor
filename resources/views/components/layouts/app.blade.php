@@ -17,6 +17,7 @@
         ['key' => 'balances', 'label' => __('Balances'), 'icon' => 'wallet', 'href' => route('balances.index')],
         ['key' => 'map', 'label' => __('Travel map'), 'icon' => 'globe', 'href' => route('travel.index')],
         ['key' => 'explorers', 'label' => __('Explorers'), 'icon' => 'flag', 'href' => route('explorers')],
+        ['key' => 'tours', 'label' => __('Organised tours'), 'icon' => 'calendar', 'href' => route('tours.index')],
         ['key' => 'create', 'label' => __('Start a trip'), 'icon' => 'plus', 'href' => route('trips.create')],
         ['key' => 'notifications', 'label' => __('Alerts'), 'icon' => 'bell', 'href' => route('notifications.index'), 'badge' => $unread],
         ['key' => 'wallet', 'label' => __('SMS wallet'), 'icon' => 'send', 'href' => route('wallet.index')],
@@ -31,7 +32,7 @@
         ['key' => 'create', 'label' => __('New trip'), 'icon' => 'plus', 'href' => route('trips.create')],
         ['key' => 'notifications', 'label' => __('Alerts'), 'icon' => 'bell', 'href' => route('notifications.index'), 'badge' => $unread],
     ];
-    $inMenu = in_array($active, ['balances', 'map', 'explorers', 'wallet', 'profile'], true);
+    $inMenu = in_array($active, ['balances', 'map', 'explorers', 'wallet', 'profile', 'tours'], true);
 
     $shortcuts = [
         ['key' => 'balances', 'label' => __('Balances'), 'icon' => 'wallet', 'href' => route('balances.index'), 'tone' => 'bg-positive-tint text-positive'],
@@ -279,6 +280,23 @@
                         </a>
                     @endforeach
                 </div>
+
+                {{-- Organiser mode --}}
+                <a href="{{ route('tours.index') }}" @click="hide()" @if ($active === 'tours') aria-current="page" @endif
+                   @class([
+                       'mt-3 flex min-h-[3.75rem] items-center gap-3 rounded-[1.25rem] border bg-surface px-3.5 py-2.5 transition active:scale-[0.99] active:bg-surface-2',
+                       'border-brand/60 ring-2 ring-brand/15' => $active === 'tours',
+                       'border-line' => $active !== 'tours',
+                   ])>
+                    <span class="flex size-10 shrink-0 items-center justify-center rounded-[0.85rem] bg-brand text-brand-ink">
+                        <x-icon name="calendar" class="size-5" />
+                    </span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block truncate text-[14.5px] font-semibold text-ink">{{ __('Organised tours') }}</span>
+                        <span class="block truncate text-[11.5px] text-muted">{{ __('Sell seats and collect payments') }}</span>
+                    </span>
+                    <x-icon name="chevron-right" class="size-4 shrink-0 text-faint" />
+                </a>
 
                 {{-- Sofor itself --}}
                 <div class="mt-4 divide-y divide-line overflow-hidden rounded-[1.25rem] border border-line bg-surface">

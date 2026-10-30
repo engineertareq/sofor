@@ -37,6 +37,12 @@ use App\Http\Controllers\SupportController;
 use App\Http\Controllers\TravelMapController;
 use App\Http\Controllers\TripCollectionController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\PublicTourController;
+use App\Http\Controllers\TourController;
+use App\Http\Controllers\TourExpenseController;
+use App\Http\Controllers\TourPaymentController;
+use App\Http\Controllers\TourRegistrationController;
+use App\Http\Controllers\TourTicketController;
 use App\Http\Controllers\TripRecapController;
 use App\Http\Controllers\TripTimelineController;
 use App\Http\Controllers\TripSafetyController;
@@ -177,6 +183,29 @@ Route::post('/p/{token}/paid', [PayLinkController::class, 'paid'])
     ->middleware('throttle:6,1')
     ->name('pay.paid');
 
+// Organised tours, the public side: a tour's page and booking form (/t/<code>),
+// and each participant's own booking page (/r/<token>). No account needed.
+Route::get('/t/{code}', [PublicTourController::class, 'show'])
+    ->where('code', '[A-Za-z0-9]{8}')
+    ->middleware('throttle:60,1')
+    ->name('tours.public');
+Route::post('/t/{code}', [PublicTourController::class, 'register'])
+    ->where('code', '[A-Za-z0-9]{8}')
+    ->middleware('throttle:10,1')
+    ->name('tours.register');
+Route::get('/r/{token}', [TourTicketController::class, 'show'])
+    ->where('token', '[A-Za-z0-9]{32}')
+    ->middleware('throttle:60,1')
+    ->name('tours.ticket');
+Route::post('/r/{token}/paid', [TourTicketController::class, 'paid'])
+    ->where('token', '[A-Za-z0-9]{32}')
+    ->middleware('throttle:10,1')
+    ->name('tours.ticket.paid');
+Route::post('/r/{token}/cancel', [TourTicketController::class, 'cancel'])
+    ->where('token', '[A-Za-z0-9]{32}')
+    ->middleware('throttle:10,1')
+    ->name('tours.ticket.cancel');
+
 // English or Bangla.
 Route::post('/locale', LocaleController::class)->middleware('throttle:20,1')->name('locale');
 
@@ -315,6 +344,33 @@ Route::middleware(['auth', 'traveller', 'verified.contact'])->group(function () 
         ->name('session.token');
 
     // Where you stand with each friend over every shared trip, and settling it in one go.
+    // Organiser mode: tours sold to the public at a fixed price. Bookings, payments
+    // and costs are bound through their tour, so none can be reached from another.
+    Route::prefix('tours')->name('tours.')->scopeBindings()->group(function () {
+        Route::get('/', [TourController::class, 'index'])->name('index');
+        Route::get('/create', [TourController::class, 'create'])->name('create');
+        Route::post('/', [TourController::class, 'store'])->middleware('throttle:20,1')->name('store');
+        Route::get('/{tour}', [TourController::class, 'show'])->name('show');
+        Route::get('/{tour}/edit', [TourController::class, 'edit'])->name('edit');
+        Route::put('/{tour}', [TourController::class, 'update'])->name('update');
+        Route::patch('/{tour}/status', [TourController::class, 'status'])->name('status');
+        Route::patch('/{tour}/sharing', [TourController::class, 'sharing'])->name('sharing');
+        Route::delete('/{tour}', [TourController::class, 'destroy'])->name('destroy');
+
+        Route::get('/{tour}/bookings.csv', [TourRegistrationController::class, 'export'])->name('export');
+        Route::post('/{tour}/bookings', [TourRegistrationController::class, 'store'])->middleware('throttle:60,1')->name('bookings.store');
+        Route::patch('/{tour}/bookings/{registration}', [TourRegistrationController::class, 'update'])->name('bookings.update');
+        Route::post('/{tour}/bookings/{registration}/remind', [TourRegistrationController::class, 'remind'])->middleware('throttle:30,1')->name('bookings.remind');
+        Route::post('/{tour}/bookings/{registration}/payments', [TourPaymentController::class, 'store'])->name('payments.store');
+
+        Route::post('/{tour}/payments/{payment}/confirm', [TourPaymentController::class, 'confirm'])->name('payments.confirm');
+        Route::post('/{tour}/payments/{payment}/reject', [TourPaymentController::class, 'reject'])->name('payments.reject');
+        Route::delete('/{tour}/payments/{payment}', [TourPaymentController::class, 'destroy'])->name('payments.destroy');
+
+        Route::post('/{tour}/costs', [TourExpenseController::class, 'store'])->name('costs.store');
+        Route::delete('/{tour}/costs/{expense}', [TourExpenseController::class, 'destroy'])->name('costs.destroy');
+    });
+
     Route::get('/balances', [BalancesController::class, 'index'])->name('balances.index');
     Route::post('/balances/{friend}/settle', [BalancesController::class, 'settle'])->middleware('throttle:10,1')->name('balances.settle');
 

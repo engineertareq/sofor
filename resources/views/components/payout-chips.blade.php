@@ -1,15 +1,17 @@
-@props(['member', 'compact' => false])
+@props(['member' => null, 'user' => null, 'compact' => false])
 
-{{-- Where to send money to this traveller: their own wallets and bank, each
-     with a copy button, so nobody has to ask "what's your bKash?". --}}
+{{-- Where to send money to this traveller (a trip member) or this person (a
+     tour's organiser, as `user`): their own wallets and bank, each with a copy
+     button, so nobody has to ask "what's your bKash?". --}}
 @php
-    $methods = $member?->user?->payoutMethods ?? collect();
+    $owner = $user ?? $member?->user;
+    $methods = $owner?->payoutMethods ?? collect();
 @endphp
 
 @if ($methods->isEmpty())
     <p {{ $attributes->merge(['class' => 'flex items-start gap-1.5 text-[11px] leading-relaxed text-faint']) }}>
         <x-icon name="info" class="mt-0.5 size-3 shrink-0" />
-        {{ __(':name has not added a bKash, Nagad or bank account yet - ask them where to send it.', ['name' => $member?->name]) }}
+        {{ __(':name has not added a bKash, Nagad or bank account yet - ask them where to send it.', ['name' => $member?->name ?? $owner?->name]) }}
     </p>
 @else
     <ul {{ $attributes->merge(['class' => 'flex flex-wrap gap-1.5']) }}>

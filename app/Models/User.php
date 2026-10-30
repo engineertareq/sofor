@@ -115,6 +115,12 @@ class User extends Authenticatable implements HasLocalePreference
         return $this->hasMany(Trip::class);
     }
 
+    /** Organised tours this traveller sells seats on. */
+    public function tours(): HasMany
+    {
+        return $this->hasMany(Tour::class)->latest();
+    }
+
     public function memberships(): HasMany
     {
         return $this->hasMany(TripMember::class);
