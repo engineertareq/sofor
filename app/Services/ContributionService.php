@@ -151,7 +151,9 @@ class ContributionService
             'gateway_trx_id' => $data['gateway_trx_id'] ?? null,
             'collection_id' => $data['collection_id'] ?? null,
             'batch' => $data['batch'] ?? null,
-            'client_uuid' => $data['client_uuid'] ?? null,
+            // Only the app sends one; leaving it out otherwise keeps the website's
+            // payments working on a database that has not been migrated yet.
+            ...(filled($data['client_uuid'] ?? null) ? ['client_uuid' => $data['client_uuid']] : []),
             'recorded_by' => $actor?->id,
             'settled_on' => $data['settled_on'] ?? now()->toDateString(),
             'confirmed_at' => $confirmed ? now() : null,
