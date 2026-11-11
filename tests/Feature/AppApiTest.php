@@ -460,6 +460,23 @@ class AppApiTest extends TestCase
             ->assertSee('অ্যাকাউন্ট আপনি নিজেই মুছতে পারেন');
     }
 
+    /** The terms are linked from Google Play too, so they have to describe today's Sofor. */
+    public function test_the_terms_cover_the_app_and_link_the_privacy_and_deletion_pages(): void
+    {
+        $this->get(route('terms'))
+            ->assertOk()
+            ->assertSee('Sofor is run by Solutor')
+            ->assertSee('18 and over')
+            ->assertSee('The Android app')
+            ->assertSee(route('privacy'), false)
+            ->assertSee(route('account.delete'), false)
+            ->assertDontSee('verification is not enabled yet');
+
+        $this->withSession(['locale' => 'bn'])->get(route('terms'))
+            ->assertOk()
+            ->assertSee('অ্যান্ড্রয়েড অ্যাপ');
+    }
+
     public function test_android_is_told_which_links_belong_to_the_app(): void
     {
         $this->getJson('/.well-known/assetlinks.json')->assertOk()->assertExactJson([]);
