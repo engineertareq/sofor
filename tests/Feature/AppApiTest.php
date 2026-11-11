@@ -442,6 +442,24 @@ class AppApiTest extends TestCase
         $this->assertNotNull($user->refresh()->deleted_at);
     }
 
+    /** Google Play checks the policy against the app's Data safety answers. */
+    public function test_the_privacy_policy_covers_the_app_and_self_service_deletion(): void
+    {
+        $this->get(route('privacy'))
+            ->assertOk()
+            ->assertSee('Firebase Cloud Messaging')
+            ->assertSee('SMS Retriever')
+            ->assertSee('no advertising and no analytics')
+            ->assertSee(route('account.delete'), false)
+            ->assertDontSee('contact the Sofor team and we will remove')
+            ->assertDontSee('deliberately not enforced');
+
+        // The same in Bangla, which is what most visitors read.
+        $this->withSession(['locale' => 'bn'])->get(route('privacy'))
+            ->assertOk()
+            ->assertSee('অ্যাকাউন্ট আপনি নিজেই মুছতে পারেন');
+    }
+
     public function test_android_is_told_which_links_belong_to_the_app(): void
     {
         $this->getJson('/.well-known/assetlinks.json')->assertOk()->assertExactJson([]);
