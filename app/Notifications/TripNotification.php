@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Channels\FcmChannel;
+use App\Support\Bangla;
 use App\Support\Phrase;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -50,7 +52,26 @@ class TripNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', FcmChannel::class];
+    }
+
+    /**
+     * The same alert on the traveller's phone. Runs in their language like
+     * toArray; a push is plain text nobody localises later, so the digits are
+     * written in Bangla here.
+     *
+     * @return array{title: string, body: string, data: array<string, scalar|null>, channel: string}
+     */
+    public function toPush(object $notifiable): array
+    {
+        $write = fn (string $text) => Bangla::active() ? Bangla::digits($text) : $text;
+
+        return [
+            'title' => $write((string) $this->titlePhrase),
+            'body' => $write((string) $this->bodyPhrase),
+            'data' => ['type' => 'trip', 'trip_id' => $this->tripId, 'url' => $this->url],
+            'channel' => 'trips',
+        ];
     }
 
     /**

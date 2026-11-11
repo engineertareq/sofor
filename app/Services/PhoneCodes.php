@@ -37,12 +37,21 @@ class PhoneCodes extends OneTimeCodes
         return __('Too many codes went to this number. Please try again in an hour.');
     }
 
-    /** Plain ASCII and under 160 characters, so it always goes as one text. */
+    /**
+     * Plain ASCII and under 160 characters, so it always goes as one text.
+     * The last line is the Android app's SMS Retriever hash, when one is set
+     * (config services.android.sms_hash): the app then reads the code out of
+     * this text by itself, without permission to read any other message.
+     */
     private function message(string $purpose, string $code): string
     {
-        return match ($purpose) {
+        $text = match ($purpose) {
             VerificationCode::PURPOSE_PASSWORD_RESET => "Sofor: {$code} is your password reset code. It expires in ".self::TTL_MINUTES.' minutes. If you did not ask for it, ignore this text.',
             default => "Sofor: {$code} is your verification code. It expires in ".self::TTL_MINUTES.' minutes. Never share it with anyone.',
         };
+
+        $hash = (string) config('services.android.sms_hash');
+
+        return $hash !== '' ? $text."\n".$hash : $text;
     }
 }

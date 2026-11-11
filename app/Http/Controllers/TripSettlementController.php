@@ -34,48 +34,8 @@ class TripSettlementController extends Controller
         $data = $request->validated();
         $user = $request->user();
 
-        $members = $trip->members()->get();
-        $current = $members->firstWhere('user_id', $user->id);
-
-        $from = $members->firstWhere('id', (int) ($data['from_member_id'] ?? 0))
-            ?? $current
-            ?? $members->firstWhere('role', 'owner')
-            ?? $members->first();
-
-        if (! $from instanceof TripMember) {
-            throw ValidationException::withMessages([
-                'amount' => __('This trip has no travellers to record a contribution for yet.'),
-            ]);
-        }
-
-        $to = $members->firstWhere('id', (int) ($data['to_member_id'] ?? 0));
-
-        // An advance always goes to whoever holds the pot.
-        $collection = filled($data['collection_id'] ?? null) ? $trip->collections()->find((int) $data['collection_id']) : null;
-
-        if ($collection !== null) {
-            $to = $members->firstWhere('id', $collection->collector_member_id);
-
-            if ($to === null || $to->is($from)) {
-                throw ValidationException::withMessages([
-                    'collection_id' => __('The person holding the pot does not pay into it.'),
-                ]);
-            }
-        }
-
-        // The leader may record any payment. Everybody else records payments
-        // they took part in - money they paid, or money they received - not a
-        // transfer between two other people.
-        $isLeader = $user->isAdmin() || $trip->user_id === $user->id;
-        $involved = $current !== null && ($from->is($current) || $to?->is($current));
-
-        if (! $isLeader && ! $involved) {
-            throw ValidationException::withMessages([
-                'from_member_id' => __('You can record payments you made or received. Ask the trip leader to record this one.'),
-            ]);
-        }
-
-        $settlement = $this->contributions->record($trip, $from, $to, $user, $data);
+        $settlement = $this->contributions->recordAs($trip, $user, $data);
+        $from = $settlement->from;
         $amount = Money::format($settlement->amount, $trip->currency);
 
         if ($settlement->isPending()) {

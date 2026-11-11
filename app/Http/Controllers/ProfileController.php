@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\StreamsMedia;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\AccountDeletion;
 use App\Services\AvatarService;
 use App\Services\ContactVerification;
 use App\Services\PortfolioService;
 use App\Support\Phone;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -34,36 +36,12 @@ class ProfileController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
-        // A new address has to be proven again.
-        $emailChanged = $user->email !== ($data['email'] ?? null);
-        $phoneChanged = $user->phone !== ($data['phone'] ?? null);
-
-        if ($emailChanged) {
-            $user->email_verified_at = null;
-        }
-
-        if ($phoneChanged) {
-            $user->phone_verified_at = null;
-        }
-
-        $user->fill([
-            'name' => $data['name'],
-            'username' => $data['username'],
-            'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
-        ]);
-
-        if (array_key_exists('profile_public', $data)) {
-            $user->profile_public = (bool) $data['profile_public'];
-        }
-
-        $user->save();
+        ['email_changed' => $emailChanged, 'phone_changed' => $phoneChanged, 'problems' => $problems] = $verification->saveProfile($user, $data);
 
         if (! $emailChanged && ! $phoneChanged) {
             return back()->with('status', __('Profile updated.'));
         }
 
-        $problems = $verification->sendPending($user);
         $sent = collect([
             $emailChanged && $user->email !== null ? __('a code to :email', ['email' => $user->email]) : null,
             $phoneChanged && $user->phone !== null ? __('a code to :phone', ['phone' => Phone::pretty($user->phone)]) : null,
@@ -190,5 +168,28 @@ class ProfileController extends Controller
         }
 
         return back()->with('status', __('Password changed. Your other devices have been signed out.'));
+    }
+
+    /** A traveller deletes their own account for good. */
+    public function destroy(Request $request, AccountDeletion $deletion): RedirectResponse
+    {
+        $request->validate(['delete_password' => ['required', 'current_password']], [
+            'delete_password.required' => __('Type your password to confirm.'),
+            'delete_password.current_password' => __('That password is not right.'),
+        ]);
+
+        $user = $request->user();
+
+        if (($blockers = $deletion->blockers($user)) !== []) {
+            return back()->withErrors(['account' => $blockers[0]]);
+        }
+
+        Auth::guard('web')->logout();
+        $deletion->delete($user);
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home')->with('status', __('Your account has been deleted.'));
     }
 }

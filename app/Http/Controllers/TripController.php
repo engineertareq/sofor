@@ -13,6 +13,7 @@ use App\Services\TravelSuggestions;
 use App\Services\TripInvitationService;
 use App\Services\TripEstimator;
 use App\Services\TripLedger;
+use App\Services\TripManager;
 use App\Services\TripPot;
 use App\Http\Requests\StoreTripRequest;
 use App\Http\Requests\UpdateTripRequest;
@@ -33,6 +34,7 @@ class TripController extends Controller
         private readonly TripLedger $ledger,
         private readonly TripActivityLogger $logger,
         private readonly TripInvitationService $invitations,
+        private readonly TripManager $trips,
     ) {}
 
     public function index(Request $request, PortfolioService $portfolio): View
@@ -85,33 +87,7 @@ class TripController extends Controller
         $data = $request->validated();
         $user = $request->user();
 
-        // One transaction, so a trip never exists without its leader and invites.
-        $trip = DB::transaction(function () use ($data, $user) {
-            $trip = Trip::create([
-                'user_id' => $user->id,
-                'title' => $data['title'],
-                'destination' => $data['destination'] ?? null,
-                'description' => $data['description'] ?? null,
-                'cover' => $data['cover'],
-                'emoji' => $data['icon'] ?? 'compass',
-                'currency' => $data['currency'],
-                ...Trip::budgetAttributes($data),
-                'status' => 'active',
-                'starts_on' => $data['starts_on'] ?? null,
-                'ends_on' => $data['ends_on'] ?? null,
-                'last_activity_at' => now(),
-            ]);
-
-            $this->invitations->ensureOwnerMember($trip, $user);
-
-            $this->logger->log($trip, 'trip_created', Phrase::make(':user created the trip', ['user' => $user->name]), $user);
-
-            foreach ($data['members'] ?? [] as $row) {
-                $this->invitations->invite($trip, $user, $row);
-            }
-
-            return $trip;
-        });
+        $trip = $this->trips->create($user, $data);
 
         $memberCount = $trip->members()->count();
 
@@ -186,25 +162,9 @@ class TripController extends Controller
         ]);
     }
 
-    public function update(UpdateTripRequest $request, Trip $trip, BudgetAlerts $budgetAlerts): RedirectResponse
+    public function update(UpdateTripRequest $request, Trip $trip): RedirectResponse
     {
-        $data = $request->validated();
-
-        $trip->update([
-            'title' => $data['title'],
-            'destination' => $data['destination'] ?? null,
-            'description' => $data['description'] ?? null,
-            'cover' => $data['cover'],
-            'emoji' => $data['icon'] ?? $trip->icon,
-            'currency' => $data['currency'],
-            ...Trip::budgetAttributes($data),
-            'starts_on' => $data['starts_on'] ?? null,
-            'ends_on' => $data['ends_on'] ?? null,
-        ]);
-
-        $this->logger->log($trip, 'trip_updated', Phrase::make(':user updated the trip details', ['user' => $request->user()->name]), $request->user());
-
-        $budgetAlerts->check($trip);
+        $this->trips->update($trip, $request->user(), $request->validated());
 
         return redirect()->route('trips.show', $trip)->with('status', __('Trip details updated.'));
     }
@@ -213,30 +173,7 @@ class TripController extends Controller
     {
         $this->authorize('end', $trip);
 
-        $trip->forceFill([
-            'status' => 'ended',
-            'ended_at' => now(),
-        ])->save();
-
-        $summary = $this->ledger->summarize($trip, $request->user());
-
-        $this->logger->log(
-            $trip,
-            'trip_ended',
-            Phrase::make(':user ended the trip at :amount', ['user' => $request->user()->name, 'amount' => Phrase::money($summary['stats']['spent'], $trip->currency)]),
-            $request->user(),
-            null,
-            ['spent' => $summary['stats']['spent']],
-        );
-
-        $this->logger->notifyMembers(
-            $trip,
-            Phrase::make(':trip has ended', ['trip' => $trip->title]),
-            Phrase::make('Total spend :amount. Costs are now locked - settle the remaining dues.', ['amount' => Phrase::money($summary['stats']['spent'], $trip->currency)]),
-            'warning',
-            'lock',
-            [$request->user()->id],
-        );
+        $this->trips->end($trip, $request->user());
 
         return redirect()->route('trips.show', $trip)->with('status', __('Trip ended. Costs are locked and the final settlement has been calculated.'));
     }
@@ -264,20 +201,7 @@ class TripController extends Controller
             return redirect()->route('trips.show', $trip)->with('error', __('The trip leader cannot leave. End or delete the trip instead.'));
         }
 
-        $hasActivity = $member->shares()->exists() || $trip->expenses()->where('trip_member_id', $member->id)->exists();
-
-        if ($hasActivity) {
-            // Keep the history intact, just stop including them going forward.
-            $member->update([
-                'status' => MemberStatus::Removed->value,
-                'include_in_split' => false,
-            ]);
-        } else {
-            $member->delete();
-        }
-
-        $this->logger->log($trip, 'member_left', Phrase::make(':user left the trip', ['user' => $user->name]), $user, null);
-        $this->logger->notifyMembers($trip, Phrase::make(':user left :trip', ['user' => $user->name, 'trip' => $trip->title]), Phrase::make('Balances were recalculated.'), 'warning', 'users', [$user->id]);
+        $this->trips->leave($trip, $member, $user);
 
         return redirect()->route('trips.index')->with('status', __('You left :trip.', ['trip' => $trip->title]));
     }
@@ -286,9 +210,7 @@ class TripController extends Controller
     {
         $this->authorize('manageMembers', $trip);
 
-        $trip->forceFill(['invite_code' => Trip::freshInviteCode()])->save();
-
-        $this->logger->log($trip, 'invite_rotated', Phrase::make(':user generated a new invite link', ['user' => $request->user()->name]), $request->user());
+        $this->trips->rotateInvite($trip, $request->user());
 
         return back()->with('status', __('New invite link generated. The old link no longer works.'));
     }

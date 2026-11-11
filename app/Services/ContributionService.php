@@ -8,6 +8,7 @@ use App\Models\Trip;
 use App\Models\TripMember;
 use App\Models\User;
 use App\Support\Money;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Single place where money paid into a trip is written down, no matter whether a
@@ -60,6 +61,59 @@ class ContributionService
     }
 
     /**
+     * A signed in traveller writes a payment down, from the website or the app.
+     * Works out who paid and who received it when either was left out, and
+     * refuses a payment between two other people unless the leader records it.
+     *
+     * @param  array<string, mixed>  $data  validated by RecordSettlementRequest
+     */
+    public function recordAs(Trip $trip, User $user, array $data): Settlement
+    {
+        $members = $trip->members()->get();
+        $current = $members->firstWhere('user_id', $user->id);
+
+        $from = $members->firstWhere('id', (int) ($data['from_member_id'] ?? 0))
+            ?? $current
+            ?? $members->firstWhere('role', 'owner')
+            ?? $members->first();
+
+        if (! $from instanceof TripMember) {
+            throw ValidationException::withMessages([
+                'amount' => __('This trip has no travellers to record a contribution for yet.'),
+            ]);
+        }
+
+        $to = $members->firstWhere('id', (int) ($data['to_member_id'] ?? 0));
+
+        // An advance always goes to whoever holds the pot.
+        $collection = filled($data['collection_id'] ?? null) ? $trip->collections()->find((int) $data['collection_id']) : null;
+
+        if ($collection !== null) {
+            $to = $members->firstWhere('id', $collection->collector_member_id);
+
+            if ($to === null || $to->is($from)) {
+                throw ValidationException::withMessages([
+                    'collection_id' => __('The person holding the pot does not pay into it.'),
+                ]);
+            }
+        }
+
+        // The leader may record any payment. Everybody else records payments
+        // they took part in - money they paid, or money they received - not a
+        // transfer between two other people.
+        $isLeader = $user->isAdmin() || $trip->user_id === $user->id;
+        $involved = $current !== null && ($from->is($current) || $to?->is($current));
+
+        if (! $isLeader && ! $involved) {
+            throw ValidationException::withMessages([
+                'from_member_id' => __('You can record payments you made or received. Ask the trip leader to record this one.'),
+            ]);
+        }
+
+        return $this->record($trip, $from, $to, $user, $data);
+    }
+
+    /**
      * Writes a contribution into the ledger: who paid, who received it, how, and
      * the transaction id they paid with.
      *
@@ -97,6 +151,7 @@ class ContributionService
             'gateway_trx_id' => $data['gateway_trx_id'] ?? null,
             'collection_id' => $data['collection_id'] ?? null,
             'batch' => $data['batch'] ?? null,
+            'client_uuid' => $data['client_uuid'] ?? null,
             'recorded_by' => $actor?->id,
             'settled_on' => $data['settled_on'] ?? now()->toDateString(),
             'confirmed_at' => $confirmed ? now() : null,

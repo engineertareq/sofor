@@ -75,6 +75,21 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/terms', 'pages.terms')->name('terms');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
+// How to delete an account and what is removed. Google Play links to this page.
+Route::view('/delete-account', 'pages.delete-account')->name('account.delete');
+
+// Tells Android that invite, pay and tour links belong to the Sofor app
+// (config services.android), so they open there instead of in the browser.
+Route::get('/.well-known/assetlinks.json', fn () => response()->json(
+    config('services.android.sha256') === [] ? [] : [[
+        'relation' => ['delegate_permission/common.handle_all_urls'],
+        'target' => [
+            'namespace' => 'android_app',
+            'package_name' => config('services.android.package'),
+            'sha256_cert_fingerprints' => config('services.android.sha256'),
+        ],
+    ]],
+))->name('assetlinks');
 
 // Branding uploaded from Admin -> Settings. Public, because the logo and favicon
 // show on every page; the strict pattern keeps paths inside the branding folder.
@@ -438,6 +453,8 @@ Route::middleware('auth')->group(function () {
         ->name('profile.avatar.crop');
     // The whole photo behind the square, for its owner's cropper only.
     Route::get('/profile/avatar/original', [ProfileController::class, 'avatarOriginal'])->name('profile.avatar.original');
+    // A traveller deletes their own account (see AccountDeletion). Asks for the password.
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->middleware('throttle:6,1')->name('profile.destroy');
 });
 
 // Profile photos live on the private disk; the strict pattern keeps paths inside it.

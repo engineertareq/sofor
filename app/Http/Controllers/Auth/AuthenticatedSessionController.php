@@ -6,16 +6,11 @@ use App\Http\Controllers\Concerns\HandlesPendingInvites;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\TripJoinController;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\User;
-use App\Services\MaintenanceMode;
+use App\Services\SignIn;
 use App\Services\TripInvitationService;
-use App\Support\Phone;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -27,42 +22,11 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    public function store(LoginRequest $request, TripInvitationService $invitations, MaintenanceMode $maintenance): RedirectResponse
+    public function store(LoginRequest $request, TripInvitationService $invitations, SignIn $signIn): RedirectResponse
     {
-        $request->ensureIsNotRateLimited();
+        $user = $signIn->attempt($request);
 
-        $validated = $request->validated();
-        $login = $validated['login'];
-
-        $user = Phone::looksLikePhone($login)
-            ? User::where('phone', Phone::normalize($login))->first()
-            : User::where('email', strtolower($login))->first();
-
-        if ($user === null || ! Hash::check($validated['password'], $user->password)) {
-            RateLimiter::hit($request->throttleKey());
-
-            throw ValidationException::withMessages([
-                'login' => __('We could not match those details. Check your email or phone and password.'),
-            ]);
-        }
-
-        if (! $user->is_active) {
-            throw ValidationException::withMessages([
-                'login' => __('This account has been paused. Please contact Sofor support.'),
-            ]);
-        }
-
-        // The sign in screen stays open during maintenance so administrators can
-        // get in; everybody else is asked to come back later.
-        if (! $user->isAdmin() && $maintenance->active()) {
-            throw ValidationException::withMessages([
-                'login' => __('Sofor is down for maintenance, so only administrators can sign in right now. Please try again soon.'),
-            ]);
-        }
-
-        RateLimiter::clear($request->throttleKey());
-
-        Auth::login($user, (bool) ($validated['remember'] ?? false));
+        Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
         $user->forceFill(['last_seen_at' => now()])->saveQuietly();

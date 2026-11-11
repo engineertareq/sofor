@@ -12,11 +12,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements HasLocalePreference
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /** Avatar gradients, kept in the Sofor palette so initials never clash
      *  with the teal and marigold the rest of the interface uses. */
@@ -78,6 +79,7 @@ class User extends Authenticatable implements HasLocalePreference
             'travel_profile' => 'encrypted:array',
             'phone_verified_at' => 'datetime',
             'last_seen_at' => 'datetime',
+            'deleted_at' => 'datetime',
             'sms_balance' => 'decimal:2',
             'is_active' => 'boolean',
             'profile_public' => 'boolean',
@@ -98,6 +100,18 @@ class User extends Authenticatable implements HasLocalePreference
     public function payoutMethods(): HasMany
     {
         return $this->hasMany(PayoutMethod::class)->orderByDesc('is_primary')->orderBy('id');
+    }
+
+    /** Phones the Sofor app is signed in on, for push alerts. */
+    public function devices(): HasMany
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
+
+    /** The owner deleted this account; only an empty row is kept (see AccountDeletion). */
+    public function isDeleted(): bool
+    {
+        return $this->deleted_at !== null;
     }
 
     public function smsTopups(): HasMany

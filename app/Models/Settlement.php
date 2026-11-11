@@ -21,6 +21,7 @@ class Settlement extends Model
         'note',
         'collection_id',
         'batch',
+        'client_uuid',
         'recorded_by',
         'settled_on',
         'confirmed_at',

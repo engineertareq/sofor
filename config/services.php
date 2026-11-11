@@ -32,6 +32,30 @@ return [
     ],
 
     /*
+    | The Android app (see ANDROID_APP_PLAN.md).
+    | - sha256: the app signing certificate fingerprints from Play Console
+    |   (App integrity), comma separated, so invite and pay links open in the app.
+    | - min_version_code: builds older than this are told to update. 0 = none.
+    | - sms_hash: the 11 character SMS Retriever hash, so codes fill themselves in.
+    */
+    'android' => [
+        'package' => env('ANDROID_APP_PACKAGE', 'io.sofor.app'),
+        'sha256' => array_values(array_filter(array_map('trim', explode(',', (string) env('ANDROID_APP_SHA256', ''))))),
+        'min_version_code' => (int) env('ANDROID_MIN_VERSION_CODE', 0),
+        'latest_version_code' => (int) env('ANDROID_LATEST_VERSION_CODE', 0),
+        'sms_hash' => env('ANDROID_SMS_HASH'),
+    ],
+
+    /*
+    | Push alerts through Firebase Cloud Messaging. `credentials` is the path
+    | to the service account JSON file, kept outside the web root. Empty = no
+    | pushes are sent.
+    */
+    'fcm' => [
+        'credentials' => env('FIREBASE_CREDENTIALS'),
+    ],
+
+    /*
     | Ownership checks for search engines: the "content" value of the meta tag
     | Google Search Console and Bing Webmaster Tools give you. Empty = no tag.
     */

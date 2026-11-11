@@ -10,6 +10,10 @@
             @endunless
 
             @include('profile.partials.password')
+
+            @unless ($user->isAdmin())
+                @include('profile.partials.delete')
+            @endunless
         </div>
 
         <div class="flex flex-col gap-6">

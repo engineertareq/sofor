@@ -23,3 +23,7 @@ Schedule::command('sofor:purge-checkpoint-lists')->timezone('Asia/Dhaka')->daily
 // A bKash payment that went through but was not booked (a dropped connection,
 // a closed tab) is found and credited within the hour.
 Schedule::command('bkash:reconcile --days=2')->hourly()->withoutOverlapping();
+
+// Push alerts for the app wait in the queue. Shared hosting cannot keep a
+// worker running, so each minute's run sends what is waiting and stops.
+Schedule::command('queue:work --stop-when-empty --max-time=50 --tries=3')->everyMinute()->withoutOverlapping(5);

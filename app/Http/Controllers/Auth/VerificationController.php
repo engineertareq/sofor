@@ -113,35 +113,7 @@ class VerificationController extends Controller
     public function updateContact(Request $request, ContactVerification $verification): RedirectResponse
     {
         $user = $request->user();
-        $type = $request->input('type') === 'phone' ? 'phone' : 'email';
-
-        if ($type === 'phone') {
-            $request->merge(['phone' => Phone::normalize((string) $request->input('phone'))]);
-        } else {
-            $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
-        }
-
-        $request->validate([
-            'email' => [Rule::requiredIf($type === 'email'), 'nullable', 'email:rfc', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'phone' => [
-                Rule::requiredIf($type === 'phone'), 'nullable', 'string', 'max:24', Rule::unique('users', 'phone')->ignore($user->id),
-                function (string $attribute, mixed $value, \Closure $fail) {
-                    if ($value !== null && ! Phone::isValid((string) $value)) {
-                        $fail(__('Enter a valid Bangladeshi mobile number, for example 01712345678.'));
-                    }
-                },
-            ],
-        ], [
-            'email.unique' => __('Another account already uses this email.'),
-            'phone.unique' => __('Another account already uses this phone number.'),
-        ]);
-
-        $verified = $type === 'email' ? $user->hasVerifiedEmail() : $user->hasVerifiedPhone();
-        abort_if($verified, 403, 'Change a confirmed contact from your profile.');
-
-        $user->forceFill($type === 'email'
-            ? ['email' => $request->input('email'), 'email_verified_at' => null]
-            : ['phone' => $request->input('phone'), 'phone_verified_at' => null])->save();
+        $type = $verification->correctUnverified($request);
 
         try {
             $type === 'email' ? $verification->sendEmailCode($user) : $verification->sendPhoneCode($user);
